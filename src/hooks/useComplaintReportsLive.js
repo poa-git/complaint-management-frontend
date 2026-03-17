@@ -1,56 +1,51 @@
 // hooks/useComplaintReportsLive.js
-import { useEffect } from "react";
-import SockJS from "sockjs-client";
+import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 
 export default function useComplaintReportsLive(onUpdate) {
-  useEffect(() => {
-    const apiBase = process.env.REACT_APP_API_BASE_URL || window.location.origin;
+  // ✅ useRef so the WS handler always calls the latest onUpdate
+  // without needing to reconnect every time the callback changes
+  const onUpdateRef = useRef(onUpdate);
 
-    // Build a proper absolute URL for SockJS
-    const wsUrl = new URL("/ws", apiBase).toString();
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
+
+  useEffect(() => {
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
+
+    // ✅ Native WebSocket — Railway doesn't support SockJS reliably
+    // Converts: https://example.com → wss://example.com/ws/websocket
+    //           http://localhost:8080 → ws://localhost:8080/ws/websocket
+    const wsUrl =
+      API_BASE_URL.replace(/^https/, "wss").replace(/^http/, "ws") +
+      "/ws/websocket";
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(wsUrl),
+      webSocketFactory: () => new WebSocket(wsUrl),
       reconnectDelay: 5000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
       debug: () => {},
-
       onConnect: () => {
         client.subscribe("/topic/paginated-by-status", (message) => {
           try {
-            const payload = JSON.parse(message.body);
-
-            // Old backend format:
-            // {
-            //   complaintId: "...",
-            //   action: "updated" | "created"
-            // }
-
-            if (onUpdate) {
-              onUpdate({
-                complaintId: payload?.complaintId || null,
-                action: payload?.action || null,
-              });
-            }
-          } catch (err) {
-            console.error("WebSocket payload parse error:", err);
+            const payload =
+              typeof message.body === "string"
+                ? JSON.parse(message.body)
+                : message.body;
+            // ✅ Always uses latest onUpdate — no stale closure
+            if (onUpdateRef.current) onUpdateRef.current(payload);
+          } catch {
+            if (onUpdateRef.current) onUpdateRef.current();
           }
         });
       },
-
-      onStompError: (frame) => {
-        console.error("STOMP error:", frame);
-      },
-
-      onWebSocketError: (event) => {
-        console.error("WebSocket error:", event);
-      },
+      onDisconnect: () => console.warn("WS disconnected — will auto-reconnect"),
     });
 
     client.activate();
 
-    return () => {
-      client.deactivate();
-    };
-  }, [onUpdate]);
+    return () => client.deactivate();
+  }, []); // ✅ Empty deps — connect once, never recreated
 }
