@@ -9,6 +9,7 @@ import { generateDaySummaryReport } from "../../ExcelReportGenerator/generateDay
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Loader from "../../../utils/Loader";
+import useComplaintReportsLive from "../../../hooks/useComplaintReportsLive";
 import { useFilters } from "../../../context/FiltersContext"; // ✅ shared filters context
 
 // WebSocket auto-refresh hook (kept local as in your file)
@@ -135,85 +136,87 @@ const OpenComplaintsTable = ({
     "reportType",
   ];
 
-  // Live websocket refresh
-  useComplaintReportsLive(async (wsData) => {
-    if (!wsData || !wsData.complaintId) return;
+ // --- Live updates via WebSocket
+useComplaintReportsLive(async (wsData) => {
+  if (!wsData || !wsData.complaintId) return;
 
-    // Check if the complaint is visible in the current groups
-    const isVisible = groups.some((group) =>
-      (group.complaints || []).some((c) => c.complaintId === wsData.complaintId)
-    );
+  // Check if the complaint is visible in the current groups
+  const isVisible = groups.some((group) =>
+    (group.complaints || []).some((c) => c.complaintId === wsData.complaintId)
+  );
 
-    if (wsData.action === "created") {
-      try {
-        // Fetch the new complaint by complaintId
-        const res = await axios.get(`${API_BASE_URL}/complaints/by-id`, {
-          params: { complaintId: wsData.complaintId },
-          withCredentials: true,
-        });
-        const newComplaint = res.data;
-        setGroups((prevGroups) => {
-          const groupKey = `${newComplaint.bankName}|${newComplaint.branchCode}|${newComplaint.branchName}`;
-          let found = false;
-          const newGroups = prevGroups.map((group) => {
-            const gKey = `${group.bankName}|${group.branchCode}|${group.branchName}`;
-            if (gKey === groupKey) {
-              found = true;
-              return {
-                ...group,
-                complaints: [newComplaint, ...(group.complaints || [])],
-              };
-            }
-            return group;
-          });
-          if (!found) {
-            // If the group doesn't exist, add it to the top
-            return [
-              {
-                bankName: newComplaint.bankName,
-                branchCode: newComplaint.branchCode,
-                branchName: newComplaint.branchName,
-                complaints: [newComplaint],
-              },
-              ...prevGroups,
-            ];
-          }
-          return newGroups;
-        });
-        fetchDashboardCounts && fetchDashboardCounts();
-      } catch (e) {
-        // fallback to full reload only if needed
-        fetchComplaints();
-        fetchDashboardCounts && fetchDashboardCounts();
-      }
-      return;
-    }
-
-    if (!isVisible) return;
-
+  if (wsData.action === "created") {
     try {
-      // Fetch the updated complaint by complaintId
+      // Fetch the new complaint by complaintId
       const res = await axios.get(`${API_BASE_URL}/complaints/by-id`, {
         params: { complaintId: wsData.complaintId },
         withCredentials: true,
       });
-      const updatedComplaint = res.data;
-      console.log("Updated complaint:", updatedComplaint.courierStatus);
-      setGroups((prevGroups) =>
-        prevGroups.map((group) => ({
-          ...group,
-          complaints: (group.complaints || []).map((c) =>
-            c.complaintId === wsData.complaintId ? updatedComplaint : c
-          ),
-        }))
-      );
+      const newComplaint = res.data;
+
+      setGroups((prevGroups) => {
+        const groupKey = `${newComplaint.bankName}|${newComplaint.branchCode}|${newComplaint.branchName}`;
+        let found = false;
+
+        const newGroups = prevGroups.map((group) => {
+          const gKey = `${group.bankName}|${group.branchCode}|${group.branchName}`;
+          if (gKey === groupKey) {
+            found = true;
+            return {
+              ...group,
+              complaints: [newComplaint, ...(group.complaints || [])],
+            };
+          }
+          return group;
+        });
+
+        if (!found) {
+          return [
+            {
+              bankName: newComplaint.bankName,
+              branchCode: newComplaint.branchCode,
+              branchName: newComplaint.branchName,
+              complaints: [newComplaint],
+            },
+            ...prevGroups,
+          ];
+        }
+
+        return newGroups;
+      });
 
       fetchDashboardCounts && fetchDashboardCounts();
     } catch {
-      // fallback to full refresh only if needed
-      // fetchComplaints();
+      fetchComplaints();
+      fetchDashboardCounts && fetchDashboardCounts();
     }
-  });
+    return;
+  }
+
+  if (!isVisible) return;
+
+  try {
+    // Fetch the updated complaint by complaintId
+    const res = await axios.get(`${API_BASE_URL}/complaints/by-id`, {
+      params: { complaintId: wsData.complaintId },
+      withCredentials: true,
+    });
+    const updatedComplaint = res.data;
+
+    setGroups((prevGroups) =>
+      prevGroups.map((group) => ({
+        ...group,
+        complaints: (group.complaints || []).map((c) =>
+          c.complaintId === wsData.complaintId ? updatedComplaint : c
+        ),
+      }))
+    );
+
+    fetchDashboardCounts && fetchDashboardCounts();
+  } catch {
+    // fallback: fetchComplaints();
+  }
+});
 
   // Fetch complaints (with filters)
   const fetchComplaints = async () => {
