@@ -1,0 +1,44 @@
+/* ComplaintDashboard.css */
+
+.complaint-dashboard {
+  padding: 20px 50px;
+  font-family: Arial, sans-serif;
+  margin: auto;
+}
+
+.complaint-dashboard h2 {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 25px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.pagination button {
+  border: 1px solid #0073e6;
+  background-color: #fff;
+  color: #0073e6;
+  font-size: 14px;
+  padding: 8px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 4px;
+}
+
+.pagination button:hover {
+  background-color: #0073e6;
+  color: #fff;
+}
+
+.pagination button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

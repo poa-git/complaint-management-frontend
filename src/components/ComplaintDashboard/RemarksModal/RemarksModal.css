@@ -1,0 +1,198 @@
+/* Modal Overlay */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 20px; /* Padding for better accessibility on smaller screens */
+}
+
+/* Modal Content */
+.remarks-modal-content {
+  background: #fdfdfd;
+  padding: 30px;
+  width: 90%;
+  max-width: 600px; /* Wider modal for better readability */
+  max-height: 85vh;
+  border-radius: 12px; /* Softer border */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Stronger shadow */
+  animation: fadeIn 0.3s ease;
+  color: #212529;
+  overflow-y: auto;
+  font-family: 'Arial', sans-serif; /* Consistent font */
+  position: relative; /* To ensure header positioning */
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa; /* Subtle background for header */
+  padding: 10px 16px;
+  border-bottom: 2px solid #007bff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for separation */
+}
+
+.modal-header h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #212529;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  color: #ff4d4f;
+  transform: scale(1.1); /* Subtle hover effect */
+}
+
+/* Buttons */
+.remarks-button,
+.remarks-add-button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin: 5px;
+}
+
+.remarks-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px); /* Slight pop effect */
+}
+
+.remarks-add-button {
+  background-color: #4681f4;
+}
+
+.remarks-add-button:hover {
+  background-color: #5783db;
+  transform: translateY(-2px); /* Slight pop effect */
+}
+
+/* Display for Latest Remark and Remarks History */
+.remarks-display,
+.remarks-history {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  color: #212529;
+  font-size: 1rem;
+  line-height: 1.5;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  overflow-y: auto; /* Ensures content doesn't break the layout */
+}
+
+.remarks-history ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.remarks-history li {
+  padding: 12px;
+  background-color: #e9ecef;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Timestamp Styling */
+.timestamp {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #495057;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.date {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.time {
+  color: #495057;
+}
+
+/* Remark Text Styling */
+.remarks-history li .remark-text,
+.remarks-display .remark-text {
+  color: #212529;
+  font-weight: normal;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Add New Remark Section */
+.add-remarks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.remarks-textarea {
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 120px;
+  box-sizing: border-box;
+  color: #212529;
+  background-color: #ffffff;
+  transition: border-color 0.3s;
+}
+
+.remarks-textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

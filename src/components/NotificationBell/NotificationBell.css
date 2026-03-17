@@ -1,0 +1,124 @@
+/* ──────────────────────────────── */
+/* Notification Bell (icon button) */
+/* ──────────────────────────────── */
+
+.notification-bell-btn {
+    font-size: 22px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    padding: 6px;
+    transition: 0.2s ease;
+  }
+  
+  .notification-bell-btn:hover {
+    transform: scale(1.1);
+  }
+  
+  /* ──────────────────────────────── */
+  /* Dropdown Panel */
+  /* ──────────────────────────────── */
+  
+  .notification-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 360px;
+    max-height: 420px;
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    padding: 0;
+    animation: slideDown 0.2s ease-out;
+    z-index: 999;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .notification-header {
+    padding: 12px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .activity-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f3f3f3;
+    transition: background 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .activity-item:hover {
+    background: #f9f9f9;
+  }
+  
+  .activity-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #333;
+  }
+  
+  .activity-meta {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #666;
+  }
+  
+  /* No records */
+  .no-activity {
+    padding: 16px;
+    text-align: center;
+    color: #888;
+  }
+  
+  .loading {
+    padding: 16px;
+    text-align: center;
+  }
+  
+  /* scrollbar */
+  .notification-dropdown::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .notification-dropdown::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 6px;
+  }
+  .change-values {
+    margin: 6px 0;
+    padding: 8px;
+    background: #f6f6f6;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #444;
+  }
+  
+  .change-values span {
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  .value-old {
+    color: #c0392b;
+    font-weight: 600;
+  }
+  
+  .value-new {
+    color: #27ae60;
+    font-weight: 600;
+  }
+  

@@ -1,0 +1,331 @@
+
+/* ---------- Tokens ---------- */
+:root {
+  /* brand */
+  --indigo-50:  #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-600: #4f46e5;
+
+  /* gray/slate */
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1f2937; /* Tailwind gray-800 but close enough visually */
+  --slate-900: #0f172a;
+
+  /* semantic */
+  --success-600: #16a34a;
+  --danger-600:  #dc2626;
+  --warning-500: #f59e0b;
+
+  /* surfaces */
+  --bg:           #ffffff;
+  --card:         #ffffff;
+  --card-border:  #e5e7eb;
+  --chip-bg:      #f3f4f6;
+  --muted:        #6b7280;
+
+  /* effects */
+  --ring:         rgba(79, 70, 229, 0.5);
+  --shadow-sm:    0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:    0 6px 16px rgba(0,0,0,.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,.10);
+
+  /* radii / spacing */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+
+  --sp-1: 6px;
+  --sp-2: 10px;
+  --sp-3: 14px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); } 
+  100% { transform: rotate(360deg); }
+}
+
+/* ---------- Wrapper ---------- */
+.ds-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-5);
+  background: var(--bg);
+  min-height: 100vh;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  color: var(--slate-900);
+}
+.ds-light { color-scheme: light; }
+
+/* ---------- Header ---------- */
+.ds-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--sp-6) var(--sp-8);
+  background: var(--card);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--card-border);
+  position: relative;
+}
+.ds-head::before {
+  content: '';
+  position: absolute; inset: 0 auto auto 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--indigo-600), #22c55e);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+.ds-title-section { display: flex; flex-direction: column; gap: 8px; }
+.ds-title { font-size: 24px; font-weight: 800; letter-spacing: -0.025em; color: var(--slate-900); display: flex; align-items: center; gap: 12px; }
+.ds-subtitle { font-size: 13px; color: var(--muted); }
+.ds-icon { font-size: 20px; }
+.ds-date-chip {
+  background: var(--chip-bg) !important;
+  color: #374151 !important;
+  border-color: #d1d5db !important;
+  font-weight: 700 !important;
+  height: 26px !important;
+}
+
+.ds-controls { display: flex; flex-direction: column; gap: var(--sp-4); align-items: flex-end; }
+.ds-theme-selector { display: flex; gap: 4px; background: var(--slate-50); border-radius: var(--r-sm); padding: 4px; border: 1px solid var(--card-border); }
+.ds-theme-btn {
+  padding: 6px 12px; border: none; background: transparent; color: var(--muted);
+  font-size: 12px; font-weight: 600; border-radius: var(--r-sm); cursor: pointer; transition: all .18s ease;
+}
+.ds-theme-btn.active, .ds-theme-btn:hover {
+  background: #fff; color: var(--slate-900); box-shadow: var(--shadow-sm);
+}
+
+/* ---------- KPI Tiles ---------- */
+.ds-kpis { display: flex; gap: var(--sp-4); flex-wrap: wrap; }
+.ds-kpi {
+  display: flex; align-items: center; gap: 12px; min-width: 150px; padding: 14px 18px;
+  background: #fff; border-radius: 14px; border: 1px solid var(--card-border); cursor: pointer;
+  transition: all .18s ease; position: relative; box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+.ds-kpi:hover { border-color: var(--slate-200); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.ds-kpi--active { border-color: var(--indigo-600); background: linear-gradient(180deg, #fff, var(--indigo-50)); }
+.ds-kpi-icon { font-size: 16px; opacity: .85; }
+.ds-kpi-content { display: flex; flex-direction: column; gap: 2px; }
+.ds-kpi-label { color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.ds-kpi-val { font-weight: 800; font-size: 18px; color: var(--slate-900); line-height: 1; }
+.ds-kpi-green { color: var(--success-600); }
+.ds-kpi-red { color: var(--danger-600); }
+.ds-kpi-highlight { position: absolute; inset: 0; border-radius: 14px; box-shadow: 0 0 0 2px var(--indigo-100) inset; pointer-events: none; }
+
+.ds-kpi-extra { margin-top: 6px; }
+.ds-progress {
+  width: 120px;
+  height: 6px;
+  background: var(--slate-100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ds-progress-fill {
+  height: 100%;
+  background: var(--indigo-600);
+  border-radius: 999px;
+  transition: width .25s ease;
+}
+
+/* ---------- Grid ---------- */
+.ds-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.8fr;
+  grid-auto-rows: minmax(120px, auto);
+  gap: var(--sp-5);
+}
+@media (max-width: 1200px) {
+  .ds-grid { grid-template-columns: 1fr; }
+  .ds-head { flex-direction: column; align-items: flex-start; gap: var(--sp-5); }
+  .ds-controls { align-items: flex-start; }
+  .ds-kpi { min-width: 130px; padding: 12px 14px; }
+}
+@media (max-width: 768px) {
+  .ds-wrap { padding: var(--sp-4); gap: var(--sp-4); }
+  .ds-head { padding: var(--sp-5); }
+  .ds-title { font-size: 20px; }
+  .ds-kpis { width: 100%; justify-content: space-between; }
+  .ds-kpi { flex: 1; min-width: 0; }
+}
+
+/* ---------- Cards ---------- */
+.ds-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--sp-6);
+  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+  position: relative;
+  animation: fadeInUp .5s cubic-bezier(.4,0,.2,1) forwards;
+}
+.ds-card:hover { box-shadow: var(--shadow-lg); border-color: var(--slate-200); transform: translateY(-2px); }
+.ds-card--donut { display: flex; flex-direction: column; }
+.ds-card--empty { display: flex; align-items: center; justify-content: center; min-height: 200px; }
+
+.ds-card-header { margin-bottom: var(--sp-5); display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.ds-card-title { font-weight: 800; font-size: 16px; color: var(--slate-900); display: flex; align-items: center; gap: 8px; letter-spacing: .01em; }
+.ds-card-subtitle { font-size: 13px; color: var(--muted); font-weight: 500; }
+.ds-card-icon { font-size: 16px; opacity: .85; }
+.ds-card-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.ds-help { font-size: 12px; color: var(--slate-600); background: var(--slate-50); border: 1px dashed var(--slate-200); padding: 4px 8px; border-radius: 999px; }
+
+/* subtle stagger for cards */
+.ds-card:nth-child(1) { animation-delay: .06s; }
+.ds-card:nth-child(2) { animation-delay: .12s; }
+.ds-card:nth-child(3) { animation-delay: .18s; }
+.ds-card:nth-child(4) { animation-delay: .24s; }
+
+/* ---------- Chart Container ---------- */
+.ds-chart {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r-sm);
+  background: #fff;
+  padding: 8px;
+  border: 1px solid var(--slate-100);
+  overflow: hidden;
+}
+.ds-chart .recharts-wrapper { overflow: visible; } /* prevent clipped labels */
+
+/* Scrollbar (WebKit) */
+.ds-chart::-webkit-scrollbar { width: 6px; height: 6px; }
+.ds-chart::-webkit-scrollbar-track { background: var(--slate-50); border-radius: 3px; }
+.ds-chart::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--slate-300) 0%, var(--slate-400) 100%); border-radius: 3px; }
+.ds-chart::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, var(--slate-400) 0%, var(--slate-500) 100%); }
+
+/* ---------- Empty & Loading ---------- */
+.ds-empty { text-align: center; color: var(--muted); padding: 40px 20px; }
+.ds-empty-icon { font-size: 48px; margin-bottom: 16px; opacity: .6; }
+.ds-empty-title { font-size: 18px; font-weight: 800; color: #374151; margin-bottom: 8px; }
+.ds-empty-subtitle { font-size: 14px; color: var(--muted); }
+
+.ds-wrap--loading { display: flex; align-items: center; justify-content: center; min-height: 380px; }
+.ds-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.ds-loading-spinner {
+  width: 32px; height: 32px; border: 3px solid var(--slate-100); border-top: 3px solid var(--indigo-600);
+  border-radius: 50%; animation: spin 1s linear infinite;
+}
+.ds-loading-text { color: var(--muted); font-size: 13px; font-weight: 600; }
+
+/* ---------- Donut extras ---------- */
+.ds-donut { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; }
+.ds-donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 10; }
+.ds-donut-rate { font-size: 36px; font-weight: 800; color: var(--slate-900); line-height: 1; letter-spacing: -0.02em; }
+.ds-donut-sub { font-size: 12px; color: var(--muted); margin-top: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.ds-donut-trend { font-size: 16px; margin-top: 4px; }
+
+/* ---------- Legend ---------- */
+.ds-legend {
+  margin-top: var(--sp-5);
+  padding: var(--sp-4);
+  background: var(--slate-50);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--slate-100);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.ds-legend-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 2px; transition: background .15s ease, padding .15s ease; }
+.ds-legend-row:hover { background: #fff; border-radius: 6px; padding: 6px 8px; margin: 0 -8px; }
+.ds-legend-item { display: flex; align-items: center; gap: 8px; }
+.ds-legend-icon { font-size: 12px; opacity: .85; }
+.ds-legend-label { color: #374151; font-weight: 700; font-size: 13px; letter-spacing: .01em; }
+.ds-legend-values { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.ds-legend-count { font-weight: 800; color: var(--slate-900); font-size: 13px; }
+.ds-legend-percent { font-size: 11px; color: var(--muted); }
+.ds-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255,255,255,.85); }
+
+/* ---------- Card footnotes ---------- */
+.ds-footnote {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--slate-600);
+  padding: 6px 10px;
+  background: var(--slate-50);
+  border: 1px dashed var(--slate-200);
+  border-radius: 8px;
+}
+
+/* ---------- Footer ---------- */
+.ds-footer { display: flex; justify-content: flex-start; }
+.ds-summary {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--r-md);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.ds-summary-title { font-weight: 800; color: var(--slate-900); margin-bottom: 6px; }
+.ds-summary-content { display: flex; gap: var(--sp-4); flex-wrap: wrap; color: #374151; }
+.ds-summary-item { font-size: 14px; }
+.ds-success-rate { color: var(--indigo-600); font-weight: 800; }
+
+/* ---------- Recharts light tweaks ---------- */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line { stroke: var(--slate-200) !important; }
+.recharts-text { fill: var(--slate-900); }
+
+/* Bar value labels */
+.ds-bar-label {
+  fill: var(--slate-500);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Y-axis tick text */
+.ds-y-tick {
+  fill: var(--slate-900);
+  font-size: 12px;
+}
+
+/* ---------- Focus & A11y ---------- */
+.ds-theme-btn,
+.ds-kpi,
+.ds-toggle {
+  outline: none;
+}
+.ds-theme-btn:focus-visible,
+.ds-kpi:focus-visible,
+.ds-toggle:focus-visible {
+  box-shadow: 0 0 0 3px var(--ring);
+  border-radius: 10px;
+}
+
+/* ---------- Reduced Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ds-card, .ds-kpi, .ds-toggle { transition: none; animation: none; }
+  .ds-card:hover, .ds-kpi:hover { transform: none; }
+}
+
+/* ---------- Print ---------- */
+@media print {
+  .ds-wrap { background: #ffffff; box-shadow: none; }
+  .ds-card { box-shadow: none; border: 1px solid #000; break-inside: avoid; }
+  .ds-theme-selector, .ds-kpis, .ds-footnote { break-inside: avoid; }
+}
+
+/* ---------- Optional Toggle (kept in case you reuse it) ---------- */
+.ds-toggle {
+  margin-left: 10px; border: 1px solid var(--card-border); background: #fff; color: var(--slate-900);
+  padding: 5px 10px; border-radius: 10px; font-size: 12px; cursor: pointer; transition: all .18s ease;
+}
+.ds-toggle--active, .ds-toggle:hover { border-color: var(--indigo-600); box-shadow: var(--shadow-sm); }
+.ds-toggle-icon { margin-right: 6px; }

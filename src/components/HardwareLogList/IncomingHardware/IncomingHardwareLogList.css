@@ -1,0 +1,393 @@
+/* General container styling */
+.hardware-log-container {
+    margin: 20px auto;
+    max-width: 1200px;
+    font-family: Arial, sans-serif;
+}
+/* New Status Styles */
+.status-dispatch-inward {
+    background-color: #1e88e5; /* Blue */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+.manage-parts-btn {
+    background: #2563eb;           /* Modern blue */
+    color: #fff;                   /* White text */
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 1.5px 6px rgba(37, 99, 235, 0.09);
+    transition: background 0.18s, transform 0.14s, box-shadow 0.18s;
+    outline: none;
+  }
+  
+  .manage-parts-btn:hover,
+  .manage-parts-btn:focus {
+    background: #1d4ed8;           /* Slightly darker blue */
+    transform: translateY(-1px) scale(1.04);
+    box-shadow: 0 3px 12px rgba(37, 99, 235, 0.14);
+  }
+  
+  .manage-parts-btn:active {
+    background: #1742af;           /* Even darker on click */
+    transform: scale(0.98);
+  }
+  
+.status-dispatch-outward {
+    background-color: #ff9800; /* Orange */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.status-received-inward {
+    background-color: #003a02; /* Green */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.status-received-outward {
+    background-color: #9c27b0; /* Purple */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+/* Heading styling */
+.hardware-log-heading {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: bold;
+}
+/* Status: Pending */
+.status-pending {
+    background-color: #3700ff; /* Amber */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* Status: Dispatched */
+  .status-dispatched {
+    background-color: #006647; /* Orange Yellow */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .status-hardware-ready {
+    background-color: #e74c3c; /* Bright Red */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  /* Status: Received */
+  .status-received {
+    background-color: #28a745; /* Success Green */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* Status: Lost */
+  .status-lost {
+    background-color: #dc3545; /* Danger Red */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* Status: Damaged */
+  .status-damaged {
+    background-color: #8e44ad; /* Deep Purple */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* Status: On Route */
+  .status-on-route {
+    background-color: #3498db; /* Sky Blue */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  /* Default Status */
+  .status-default {
+    background-color: #bdc3c7; /* Light Gray */
+    color: black !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+/* Table styling */
+.complaint-table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.complaint-table th,
+.complaint-table td {
+    padding: 12px 20px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-weight: 500;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.complaint-table th {
+    background-color: #0073e6;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.complaint-table tr:hover {
+    background-color: #e8f0fe;
+    transition: background-color 0.2s ease;
+}
+
+/* Button styling */
+button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.update-button {
+    background-color: #0073e6;
+    color: #fff;
+    font-weight: bold;
+}
+
+.update-button:hover {
+    background-color: #005bb5;
+}
+
+.save-button {
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+}
+
+.save-button:hover {
+    background-color: #3e8e41;
+}
+
+/* Edit form styling */
+.edit-form-row {
+    background-color: #f9f9f9;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.edit-form input,
+.edit-form select {
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    background-color: #f9f9f9;
+}
+/* Truncated Text */
+.truncate-text {
+    display: block;
+    max-width: 200px; /* Adjust the width */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+  
+  /* Tooltip Container */
+  .tooltip-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Tooltip Styling */
+  .portal-tooltip {
+    position: fixed; /* Ensures it isn't confined by table boundaries */
+    background-color: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    max-width: 300px;
+    white-space: normal; /* Allow wrapping */
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    transform: translate(-50%, 0); /* Center horizontally */
+  }
+  
+.edit-form input:focus,
+.edit-form select:focus {
+    border-color: #0073e6;
+    box-shadow: 0 0 5px rgba(0, 115, 230, 0.5);
+}
+
+/* No data fallback styling */
+.no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* Truncated cell for long data */
+.truncated-cell {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    color: #555;
+}
+
+.truncated-cell:hover {
+    text-decoration: underline;
+}
+
+/* Dropdown (select) styling */
+select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #333;
+    outline: none;
+    appearance: none;
+}
+
+select:focus {
+    border-color: #0073e6;
+    box-shadow: 0 0 5px rgba(0, 115, 230, 0.5);
+}
+
+/* Date Picker (input[type="date"]) styling */
+input[type="date"] {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #333;
+    outline: none;
+}
+
+input[type="date"]:focus {
+    border-color: #0073e6;
+    box-shadow: 0 0 5px rgba(0, 115, 230, 0.5);
+}
+.search-filters {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-right: 10px;
+  }
+  
+  .search-filters:hover {
+    background-color: #2980b9;
+  }
+  
+  .search-filters:active {
+    transform: scale(0.98);
+  }
+  
+  .search-filters:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+  }
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .complaint-table th,
+    .complaint-table td {
+        font-size: 12px;
+        padding: 10px 15px;
+    }
+
+    .truncated-cell {
+        max-width: 100px;
+    }
+
+    select,
+    input[type="date"],
+    input[type="text"] {
+        font-size: 12px;
+    }
+
+    .edit-form {
+        padding: 10px 15px;
+    }
+}

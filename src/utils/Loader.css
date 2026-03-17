@@ -1,0 +1,36 @@
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column; /* vertical */
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+  
+  .spinner {
+    border: 6px solid #e0e0e0;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 0.9s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .progress-text {
+    margin-top: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  

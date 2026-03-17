@@ -1,0 +1,306 @@
+/* Container and Sidebar Styles */
+.dashboard-container {
+  display: flex;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  background-color: #f8f9fa;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 250px; /* Fixed width for the sidebar */
+  min-width: 250px; /* Prevent sidebar from shrinking */
+  max-width: 250px; /* Prevent sidebar from expanding */
+  background-color: #ffffff; /* Sidebar background */
+  padding-top: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for better appearance */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  overflow-y: auto; /* Allow scrolling if content overflows */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  position: fixed; /* Fix sidebar in place */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Keep sidebar above other content */
+}
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.user-avatar {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-info h3 {
+  color: #333;
+  font-weight: bold;
+}
+
+.sidebar-nav {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the navigation items horizontally */
+  justify-content: center; /* Centers the navigation items vertically */
+  gap: 15px; /* Adds consistent spacing between the items */
+}
+
+
+.sidebar-nav .nav-item {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  width: 100%; /* Ensure items span the full width */
+  padding: 15px 20px; /* Adjust padding for spacing */
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 10px;
+  text-align: left;
+}
+
+
+.sidebar-nav .nav-item:hover,
+.sidebar-nav .nav-item:focus {
+  background-color: #f1f1f1; /* Lighter hover background for better contrast */
+  color: #007bff;
+  border-left-color: #007bff; /* Consistent hover border color */
+}
+
+.sidebar-nav .active {
+  background-color: #007bff;
+  color: #ffffff;
+  border-left-color: #1abc9c;
+}
+
+.sidebar-nav .nav-item .icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+/* Main Content Styles */
+.main-content {
+  margin-left: 250px; /* Match the sidebar's width */
+  padding: 20px; /* Add padding for inner spacing */
+  box-sizing: border-box; /* Padding doesn't add to the width */
+  flex-grow: 1; /* Allow content to fill remaining space */
+  overflow-y: auto; /* Scroll if content exceeds screen height */
+  height: 100vh; /* Full viewport height */
+  background-color: #ffffff;
+}
+
+.dashboard-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.2rem; /* Larger font for the header */
+  font-weight: bold;
+  color: #333;
+}
+
+.dashboard-header p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Styling for overall and today's stats sections */
+.status-cards,
+.today-stats .status-cards {
+  display: flex;
+  gap: 30px; /* Increase gap for better separation */
+  justify-content: center; /* Center-align cards */
+  flex-wrap: wrap; /* Ensure proper wrapping for smaller screens */
+  margin: 30px 0; /* Add spacing between sections */
+}
+
+/* Cards styling */
+.status-card {
+  padding: 25px 20px; /* Increased padding for a more spacious look */
+  text-align: center;
+  flex: 1;
+  min-width: 180px; /* Slightly wider for better proportions */
+  max-width: 220px; /* Ensure consistent size */
+  border-radius: 10px; /* Slightly rounder corners for a modern feel */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.status-card:hover {
+  transform: translateY(-5px);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Section headings */
+.dashboard-header,
+.today-stats h3 {
+  margin-bottom: 25px; /* Add spacing below headings */
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+/* Section spacing */
+.today-stats {
+  margin-top: 40px; /* Add more space above today's complaints */
+}
+
+/* Colors remain the same for cards */
+.status-card.open {
+  background-color: #9eccfa; /* Light blue */
+  color: #007bff;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #0056b3; /* Blue border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.status-card.in-progress {
+  background-color: #ffdcad; /* Light orange */
+  color: #fc7100;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #d35400; /* Orange border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.status-card.closed {
+  background-color: #8ff1ab; /* Light green */
+  color: #06270e;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #045d33; /* Green border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.status-card.approved {
+  background-color: #ff9be6; /* Light pink */
+  color: #a30956 !important;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #830046; /* Pink border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.status-card.overall {
+  background-color: #c8a2c8; /* Soft purple */
+  color: #3d003d !important; /* Deep purple */
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #7a378b; /* Purple border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.status-card.wait-for-approval {
+  background-color: #fff587; /* Soft yellow */
+  color: #493700 !important; /* Dark brown */
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #b59b00; /* Yellow border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.status-card.pending-for-closed {
+  background-color: #b3a1ff; /* Soft lilac */
+  color: #4b0082 !important; /* Indigo */
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #6a0080; /* Lilac border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.status-card.closed-same-day {
+  background-color: #a0d2eb; /* Light cyan-blue */
+  color: #005f73; /* Deep teal */
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #004d60; /* Cyan-blue border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+.status-card.today-registered {
+  background-color: #e1baff; /* Soft lavender purple */
+  color: #5e009c; /* Rich purple text */
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #5e009c; /* Rich purple border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.status-card.today-registered:hover {
+  transform: translateY(-5px);
+  background-color: #d49aff; /* Slightly darker lavender purple on hover */
+}
+
+
+
+/* Role-based Panels */
+.dashboard-card {
+  margin-top: 30px; /* Increased spacing between dashboard cards */
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-panel {
+  background-color: #ffeb3b;
+}
+
+.user-panel {
+  background-color: #8bc34a;
+}
+.loading-spinner {
+  text-align: center;
+  font-size: 1.5em;
+  margin-top: 50px;
+}
+.sidebar-nav .logout-button {
+  margin-top: auto;
+  background-color: #007bff;
+  color: white;
+  border-left-color: transparent;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar-nav .logout-button:hover {
+  background-color: #007bff;
+  color: white;
+  border-left-color:#007bff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .status-cards {
+    flex-direction: column; /* Stack cards vertically on smaller screens */
+    gap: 20px; /* Reduced gap for smaller screens */
+  }
+
+  .sidebar {
+    width: 200px; /* Narrower sidebar for smaller screens */
+  }
+
+  .sidebar-nav .nav-item {
+    padding: 10px 20px; /* Adjusted padding for smaller screens */
+    font-size: 0.9rem; /* Smaller font size */
+  }
+}

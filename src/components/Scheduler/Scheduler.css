@@ -1,0 +1,234 @@
+/* General Container Styling */
+.scheduler-container {
+    margin: 20px;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #4a4a4a; /* Neutral dark gray for text */
+}
+/* Make the names column bold */
+.scheduler-table td:first-child,
+.scheduler-table th:first-child {
+    font-weight: bold; /* Bold font for names */
+    color: #004d40; /* Optional: Dark teal for better contrast */
+    text-align: left; /* Optional: Left-align names if preferred */
+  vertical-align: middle; /* Vertically centered */
+}
+
+/* Header Styling */
+.scheduler-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e6f7f8; /* Light aqua for a fresh look */
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.scheduler-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: #006064; /* Deep teal for better readability */
+}
+
+.navigation-button {
+    background-color: #00796b !important; /* Medium teal */
+    color: #ffffff !important;
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 8px 15px;
+    text-transform: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.navigation-button:hover {
+    background-color: #004d40 !important; /* Darker teal */
+    transform: scale(1.05);
+}
+
+/* Table Styling */
+.scheduler-table-wrapper {
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+    margin-top: 20px;
+    border: 1px solid #b0bec5; /* Soft gray-blue */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.scheduler-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Prevent columns from expanding beyond available space */
+}
+
+.scheduler-table th,
+.scheduler-table td {
+    text-align: center;
+    padding: 15px;
+    border: 1px solid #eceff1; /* Light gray-blue for borders */
+    vertical-align: middle; /* Ensures text is vertically centered */
+    white-space: nowrap;
+}
+
+.scheduler-table th {
+    background-color: #c8e6c9; /* Soft green for header */
+    font-size: 14px;
+    font-weight: bold;
+    color: #004d40; /* Dark teal */
+}
+
+.scheduler-table td {
+    background-color: #ffffff; /* White background for cells */
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+    height: 100px;
+}
+
+.scheduler-table td:hover {
+    background-color: #f0f4c3; /* Very light green for hover */
+    transform: scale(1.02);
+    cursor: pointer;
+}
+
+/* Alternating Row Colors */
+.scheduler-table tbody tr:nth-child(even) td {
+    background-color: #f9fbe7; /* Subtle green tint for alternating rows */
+}
+
+/* Event Styling */
+.scheduler-event {
+    padding: 5px 10px;
+    margin: 5px 0;
+    background-color: #1b5e20; /* Rich green for event background */
+    color: #ffffff;
+    border-radius: 8px; /* Rounded corners */
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.scheduler-event:hover {
+    background-color: #33691e; /* Slightly lighter green for hover */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Highlight the entire cell when there is an event */
+.scheduler-cell.has-event {
+    background-color: #a5d6a7; /* Soft green for scheduled cells */
+    color: #004d40; /* Dark teal for text */
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.scheduler-cell.has-event:hover {
+    background-color: #81c784; /* Brighter green for hover on scheduled cells */
+}
+.modal-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; /* Increased width */
+    background-color: #ffffff;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow for emphasis */
+    padding: 24px;
+    border-radius: 16px; /* Larger rounded corners */
+    border: none;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+  }
+  
+  .modal-header h2 {
+    margin: 0;
+    font-size: 20px; /* Slightly larger title font */
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .modal-close-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 16px; /* Slightly larger close button */
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .modal-close-button:hover {
+    color: #0056b3;
+  }
+  
+  .modal-content {
+    max-height: 400px; /* Adjusted height for more space */
+    overflow-y: auto;
+  }
+  
+  .modal-event {
+    background-color: #f8f9fa; /* Slightly off-white for contrast */
+    border-radius: 12px; /* Smooth corners for cards */
+    padding: 16px;
+    margin-bottom: 12px; /* Increased spacing between cards */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for cards */
+    border-left: 6px solid #4caf50; /* Thicker accent color */
+  }
+  
+  .modal-event p {
+    margin: 6px 0; /* Added spacing between text */
+    font-size: 17px;
+    color: #000000;
+    font-weight: 300;
+  }
+  
+  .modal-event strong {
+    color: #333;
+    font-weight:bold;
+    font-size: large;
+  }
+  
+  .scheduler-cell.all-successful {
+    background: #e6ffe6 !important;
+    font-weight: bold;
+  }
+  
+/* Responsive Design */
+@media (max-width: 768px) {
+    .scheduler-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .navigation-button {
+        margin: 10px 0;
+    }
+
+    .scheduler-table th,
+    .scheduler-table td {
+        font-size: 12px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .scheduler-header h2 {
+        font-size: 16px;
+    }
+
+    .scheduler-table th,
+    .scheduler-table td {
+        font-size: 10px;
+        padding: 8px;
+    }
+}

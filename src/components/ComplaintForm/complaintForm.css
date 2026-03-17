@@ -1,0 +1,122 @@
+.complaint-form {
+  width: 100%;
+  max-width: 1000px;
+  margin: 5px auto;
+  padding: 25px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Roboto', sans-serif;
+}
+
+.complaint-form h2 {
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* Form Row with Dynamic Centered Grid */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Dynamic columns */
+  gap: 15px;
+  margin-bottom: 25px;
+  justify-content: center; /* Center content if fewer columns */
+}
+
+.form-section {
+  background-color: #f0f0f5;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+/* Make Details Section Full Width */
+.full-width {
+  grid-column: span 3; /* Default to span all columns */
+}
+
+.form-section label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.form-section input,
+.form-section select,
+.form-section textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+/* Specific Style for Textarea */
+.form-section textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.form-section input:focus,
+.form-section select:focus,
+.form-section textarea:focus {
+  border-color: #3498db;
+  background-color: #f9f9fc;
+  outline: none;
+}
+
+/* Submit Button Styling */
+.smt-btn[type="submit"] {
+  width: 100%;
+  padding: 15px;
+  background-color: #0073e6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px; /* Reduced the roundness for a more modern look */
+  cursor: pointer;
+  font-size: 1.1rem; /* Adjusted font size slightly for readability */
+  font-weight: 500; /* Slightly lighter for a cleaner look */
+  margin-top: 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.smt-btn[type="submit"]:hover {
+  background-color: #005bb5; /* Darker shade on hover */
+  color: #ffffff; /* Keep text white on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slightly larger shadow on hover */
+}
+
+.smt-btn[type="submit"]:active {
+  background-color: #004c99; /* Even darker shade for active state */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle shadow for pressed effect */
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .form-row {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Adjust grid to two columns if space allows */
+  }
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr; /* Single column layout on small screens */
+  }
+
+  .full-width {
+    grid-column: span 1; /* Single column on smaller screens */
+  }
+}

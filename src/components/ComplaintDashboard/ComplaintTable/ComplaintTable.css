@@ -1,0 +1,621 @@
+  /* General Table Styles */
+  .complaint-table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .group-header-row td {
+    padding: 10px; /* Adds spacing inside the cell */
+    line-height: 1.6; /* Improves readability */
+  }
+  
+  .group-header-row span {
+    margin-right: 18px; /* Adds space between text items */
+  }
+  
+  /* Priority Row Styling */
+.priority-row {
+  background-color: rgba(7, 255, 81, 0.534) !important;
+  padding: 5px;
+}
+
+/* Priority Button Styling */
+.priority-button {
+  padding: 5px 10px;
+  margin-left: 5px;
+  background-color: #5bc75b;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  font-size: 1em;
+}
+
+.priority-button:hover {
+  background-color: #d6d6d6;
+}
+
+.priority-button.priority-active {
+  background-color: #ff4444;
+  color: white;
+}
+
+.priority-button.priority-active:hover {
+  background-color: #e03333;
+}
+.pool-button {
+  background: #e0e0e0;
+  color: #444;
+}
+
+.pool-button.active {
+  background: #0a8d34;
+  color: #fff;
+  font-weight: bold;
+  border: 2px solid #0a8d34;
+}
+
+  .complaint-table th,
+  .complaint-table td {
+    padding: 12px 20px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-weight: 500;
+    font-size: 12px;
+    color: #333;
+    line-height: 1.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .complaint-table th {
+    background-color: #0073e6;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  /* .complaint-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  } */
+
+  /* .complaint-table tr:hover {
+    background-color: #e8f0fe;
+    transition: background-color 0.2s ease;
+  } */
+
+  .truncated-cell {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    color: #000000;
+  }
+
+  .truncated-cell:hover {
+    text-decoration: underline;
+  }
+
+  /* Responsive Table */
+  @media screen and (max-width: 768px) {
+    .complaint-table th,
+    .complaint-table td {
+      font-size: 14px;
+      padding: 10px 15px;
+    }
+
+    .truncated-cell {
+      max-width: 100px;
+    }
+  }
+
+  /* Status Styles */
+  .status-open {
+    background-color: #4c69ff;
+    color: white !important;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-marked-in-pool{
+    background-color: #2f00ff;
+    color: white !important;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-renovation {
+    background-color: #002841; /* Dodger Blue */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-on-call {
+    background-color: #004121; /* Dodger Blue */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-testing {
+    background-color: #494800 !important; /* Dodger Blue */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-in-progress {
+    background-color: #ff8c00;
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .status-closed {
+    background-color: #4caf50;
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .status-wait-for-approval {
+    background-color: #856404;
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .status-pending-for-closed {
+    background-color: #6f42c1;
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .status-approved {
+    background-color: #d63384;
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-pre-approved {
+    background-color: #5e143a;
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* New Status Styles */
+  .status-foc {
+    background-color: #1e90ff; /* Dodger Blue */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .status-qout {
+    background-color: #8b4513 !important; /* Dark Brownish Orange */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+  .status-hardware-picked{
+    background-color: #469b00; /* Green */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+
+  }
+  .status-network-issue {
+    background-color: #dc3545; /* Red */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-visit-schedule {
+    background-color: #17a2b8; /* Teal */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .status-visit-schedule:hover {
+    background-color: #17a2b8; /* Teal */
+    color: white !important;
+    padding: 5px 10px;
+    border-radius: 4px;
+    /* font-weight: bold; */
+    font-size: 16px;;
+    text-align: left;
+  }
+ /* New Status Styles */
+.status-visit-on-hold {
+  background-color: #ff6f61; /* Coral */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status-delivered {
+  background-color: #6c757d; /* Slate Gray */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+.courier-status-dispatch-inward {
+  background-color: #1e88e5; /* Blue */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.courier-status-dispatch-outward {
+  background-color: #ff9800; /* Orange */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.courier-status-received-inward {
+  background-color: #003a02 !important; /* Green */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.courier-status-received-outward {
+  background-color: #9c27b0; /* Purple */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+.courier-status-na {
+  background-color: #242424; /* Purple */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+.status-disapproved{
+  background-color: #e95b30; /* Green */
+  color: white !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+
+}
+.status-additional-counter {
+  background-color: #7a8609;
+  color: rgb(255, 255, 255) !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+.status-verify-approval {
+  background-color: #2e2d2b; /* Dark Charcoal */
+  color: #fff !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status-bfc-approval {
+  background-color: #173f35; /* Very Dark Teal Green */
+  color: #fff !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status-aho-approval {
+  background-color: #45171d; /* Deep Maroon */
+  color: #fff !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status-bfc-aho {
+  background-color: #3d2c53; /* Deep Royal Purple */
+  color: #fff !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+.status-out-of-stock {
+  background-color: #d19107; /* Light Gray */
+  color: rgb(255, 255, 255) !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+  .overdue {
+    background-color: #ffcbcb; /* Light red background */
+  }
+
+  /* Buttons */
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    cursor: pointer;
+  }
+  .grey-button {
+    background-color: #d3d3d3 !important;
+    color: #7a7a7a !important;
+  }
+  
+  .update-button,
+  .remark-button {
+    background-color: #0073e6;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500 !important;
+    transition: background-color 0.2s ease;
+    text-transform: capitalize;
+  }
+
+  /* Base button styles */
+  /* Blue button for remarks */
+.remark-button {
+  position: relative;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #007bff; /* Blue button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.remark-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Notification badge */
+.remarks-count {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.remarks-count-green {
+  background-color: green; /* Green notification */
+}
+
+.remarks-count-red {
+  background-color: red; /* Red notification */
+}
+
+
+  .update-button:hover,
+  .remark-button:hover {
+    background-color: #005bb5;
+  }
+
+  .update-button:disabled,
+  .remark-button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+  .highlight-row {
+    background-color: #ffcbcb; /* Light red background */
+  }
+  
+  /* Pagination Container */
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    gap: 10px; /* Slightly increased spacing for better visual separation */
+    flex-wrap: nowrap; /* Prevents wrapping */
+    overflow-x: auto; /* Enables scrolling if the buttons overflow */
+    padding: 12px 0; /* Adjusted padding for balanced spacing */
+    background-color: #f9f9f9; /* Light background for visual separation */
+    border-radius: 6px; /* Rounded edges for a modern look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+
+  /* Page Button */
+  .page-button {
+    background-color: #f9f9f9;
+    color: #0073e6;
+    border: 1px solid #ddd;
+    padding: 10px 14px; /* Increased padding for better clickability */
+    border-radius: 6px; /* More rounded corners */
+    cursor: pointer;
+    font-size: 15px; /* Slightly larger font for readability */
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    min-width: 42px; /* Slightly wider for better alignment */
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* Hover Effect */
+  .page-button:hover {
+    background-color: #005bb5;
+    color: #fff;
+    transform: scale(1.05); /* Subtle zoom for interactivity */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+  }
+
+  /* Active Button */
+  .page-button.active {
+    background-color: #0073e6;
+    color: #000000;
+    font-weight: bold;
+    pointer-events: none;
+    border: 2px solid #005bb5; /* Thicker border for active state */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); /* Subtle shadow for emphasis */
+  }
+
+  /* Disabled Button */
+  .page-button:disabled {
+    background-color: #e0e0e0;
+    color: #aaa;
+    cursor: not-allowed;
+    border-color: #ddd;
+    opacity: 0.7; /* Reduce opacity for disabled buttons */
+  }
+/* Back to Table Button */
+.back-button {
+  background-color: #2c3e50;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  display: inline-block;
+  text-transform: uppercase;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+  background-color: #34495e;
+  transform: scale(1.05);
+}
+.view-report-button:enabled {
+  background-color: #4caf50;
+  color: white;
+}
+/* View History Button */
+.view-history-button {
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-transform: uppercase;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.view-history-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+/* Icon styles for View History */
+.view-history-button i {
+  font-size: 14px;
+}
+
+/* Disabled button */
+.view-history-button:disabled {
+  background-color: #d6d8db;
+  color: #ffffff;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+  /* Focus Style for Accessibility */
+  .page-button:focus {
+    outline: 2px solid #0073e6; /* Focus ring for accessibility */
+    outline-offset: 2px;
+    background-color: #e6f0ff; /* Light blue background for focus */
+  }
+
+  /* Row Selection  */
+  .selected-row {
+    background-color: #fff3cd; /* Light yellow */
+    transition: background-color 0.3s ease;
+  }
+  /* .complaint-table tr:hover {
+    background-color: #e8f0fe;
+  } */
+
+  /* Responsive Adjustments */
+  @media screen and (max-width: 768px) {
+    .pagination-container {
+      gap: 8px; /* Slightly reduced gap for smaller screens */
+    }
+
+    .page-button {
+      padding: 8px 12px; /* Adjust padding */
+      font-size: 14px; /* Reduce font size for compactness */
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .page-button {
+      padding: 6px 10px; /* Further reduce padding for narrow screens */
+      font-size: 12px; /* Compact font size for small screens */
+    }
+  }

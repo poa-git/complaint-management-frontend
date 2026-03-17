@@ -1,0 +1,118 @@
+/* Container for Today's Complaints */
+.todays-complaints-container {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9 !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%; /* Full width */
+    box-sizing: border-box;
+    text-align: center;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .todays-complaints-container:hover {
+    background-color: #f4f4f4;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Section Title */
+  .todays-complaints-container .section-title {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  
+  /* Chart Container */
+  .chart-container {
+    width: 100%;
+    max-width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  /* Tooltip Styling */
+  .tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    pointer-events: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Chart Title */
+  .chart-container svg text {
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Bar Styles */
+  .bar-open {
+    fill: #007bff;
+    transition: all 0.3s ease;
+  }
+  
+  .bar-closed {
+    fill: #28a745;
+    transition: all 0.3s ease;
+  }
+  
+  .bar-open:hover,
+  .bar-closed:hover {
+    opacity: 0.8;
+  }
+  
+  /* Bar Label Styling */
+  .todays-complaints-container .bar-label {
+    fill: #ffffff; /* White color for better contrast */
+    font-size: 16px; /* Increased font size */
+    font-weight: bold; /* Bold text for emphasis */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for readability */
+    pointer-events: none; /* Ensure text doesn't capture mouse events */
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 1024px) {
+    .chart-container {
+      max-width: 250px;
+      height: 250px;
+    }
+  
+    .todays-complaints-container .section-title {
+      font-size: 1.6rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .chart-container {
+      max-width: 200px;
+      height: 200px;
+    }
+  
+    .todays-complaints-container .section-title {
+      font-size: 1.4rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .chart-container {
+      max-width: 150px;
+      height: 150px;
+    }
+  
+    .todays-complaints-container .section-title {
+      font-size: 1.2rem;
+    }
+  }
+  

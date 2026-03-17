@@ -1,0 +1,283 @@
+/* FilterSection.css */
+
+/* General layout for the filter section */
+.filter-section {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    position: relative; /* To position dropdowns properly */
+  }
+  
+  .filter-label {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  
+  .filter-input {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+    z-index: 1; /* Keeps inputs above other elements */
+  }
+  
+  .filter-input:focus {
+    border-color: #0073e6;
+    box-shadow: 0 0 5px rgba(0, 115, 230, 0.3);
+  }
+  
+  .date-filter {
+    width: 150px;
+  }
+  
+  .clear-filters {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #0073e6;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    white-space: nowrap;
+    font-weight: bold;
+  }
+  
+  .clear-filters:hover {
+    background-color: #005bb5;
+    transform: scale(1.05);
+  }
+  
+  /* Suggestions dropdown */
+  .suggestions {
+    position: absolute;
+    top: calc(100% + 5px); /* Places it below the input field */
+    left: 0;
+    max-height: 250px; /* Increased height for better visibility */
+    width: 220px; /* Matches the width of the input field */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 1000;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 10px 0; /* Added padding for better spacing inside the dropdown */
+    animation: fadeIn 0.2s ease-in-out; /* Smooth dropdown animation */
+  }
+  
+  .suggestions::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .suggestions::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 4px;
+  }
+  
+  .suggestions::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+  }
+  
+  .suggestions::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+  }
+  
+  .suggestion-item {
+    padding: 10px 15px; /* Increased padding for larger clickable area */
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .suggestion-item:hover {
+    background-color: #f0f0f0;
+    color: #0073e6;
+  }
+  
+  .no-suggestions {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+    font-style: italic;
+  }
+  
+  /* Table-container fix for dropdown */
+  .table-container {
+    position: relative; /* Makes table respect dropdowns */
+    z-index: 0;
+  }
+  /* Style for the Generate Report button */
+  .generate-report {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text color */
+    border: none; /* No border */
+    padding: 12px 20px; /* Padding for size */
+    font-size: 16px; /* Font size */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  }
+  
+  /* Hover effect */
+  .generate-report:hover {
+    background-color: #45a049; /* Slightly darker green */
+    transform: scale(1.05); /* Slight zoom effect */
+  }
+  
+  /* Active effect */
+  .generate-report:active {
+    background-color: #3e8e41; /* Even darker green */
+    transform: scale(1); /* Reset zoom */
+  }
+  /* Report Dropdown Container */
+  .report-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Styling for Dropdown Select */
+  .dropdown-select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .dropdown-select:hover,
+  .dropdown-select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  /* Styling for Generate Report Button */
+  .generate-report-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .generate-report-btn:hover {
+    background-color: #0056b3;
+  }
+  .lab-toggle-switch {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 420px;
+    height: 44px;
+    margin: 0 auto 32px auto;
+    background: #f5f7fa;
+    border-radius: 25px;
+    box-shadow: 0 2px 10px #0001;
+    padding: 3px;
+    user-select: none;
+    font-weight: 500;
+  }
+  
+  .lab-toggle-option {
+    flex: 1;
+    z-index: 2;
+    text-align: center;
+    padding: 10px 0;
+    cursor: pointer;
+    border-radius: 22px;
+    transition: color 0.2s;
+    color: #888;
+    font-size: 1.05rem;
+    font-family: inherit;
+  }
+  
+  .lab-toggle-option.active {
+    color: #1a4e88;
+    font-weight: 700;
+  }
+  
+  .lab-toggle-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 50%;
+    height: 38px;
+    background: #e8f1ff;
+    border-radius: 20px;
+    transition: left 0.22s cubic-bezier(.77,0,.18,1);
+    z-index: 1;
+    box-shadow: 0 2px 7px #1a4e8822;
+  }
+  
+  .lab-toggle-slider.parts {
+    left: calc(50% + 3px);
+  }
+  
+  /* Animation for dropdown */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Media query for responsiveness */
+  @media (max-width: 768px) {
+    .filter-section {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 15px;
+    }
+  
+    .filter-group {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  
+    .filter-input {
+      width: 100%; /* Make inputs full width on smaller screens */
+    }
+  
+    .clear-filters {
+      align-self: stretch;
+      text-align: center;
+    }
+  
+    .suggestions {
+      width: 100%; /* Make dropdown full width in responsive mode */
+    }
+  }
+  

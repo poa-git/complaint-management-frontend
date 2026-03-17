@@ -1,0 +1,370 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+  animation: fadeInBackground 0.3s ease;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  font-size: 24px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content form label {
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 5px;
+}
+.modal-content form label .equipment-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+  margin-top: 5px;
+}
+.modal-content form input[type="date"],
+.modal-content form select,
+.modal-content form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: black;
+  background-color: #ffffff; /* Light gray background */
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-content form input[type="date"]:focus,
+.modal-content form select:focus,
+.modal-content form textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.modal-content form input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(25%);
+  cursor: pointer;
+}
+
+/* Buttons styling */
+.modal .modal-content form .btn-container {
+  display: flex; /* Use flexbox for alignment */
+  justify-content: center; /* Center buttons horizontally */
+  align-items: center; /* Ensure vertical alignment */
+  gap: 15px; /* Add space between buttons */
+  margin-top: 20px; /* Spacing above the buttons */
+}
+
+.modal-content form .btn {
+  padding: 12px 20px; /* Ensure equal padding on all sides */
+  font-size: 16px; /* Maintain consistent font size */
+  font-weight: bold; /* Bold text for emphasis */
+  border: none; /* Remove border */
+  border-radius: 6px; /* Add rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  text-align: center; /* Center text inside the button */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+  box-sizing: border-box; /* Include padding and border in sizing */
+  height: 50px; /* Fixed height for consistency */
+  min-width: 150px; /* Ensure both buttons have a uniform width */
+}
+
+.modal-content form .btn[type="submit"] {
+  background-color: #005bb5; /* Green for Save Changes */
+  color: white;
+}
+
+.modal-content form .btn[type="submit"]:hover {
+  background-color: #005bb5; /* Darker green on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+.modal-content form .btn[type="button"] {
+  background-color: #005bb5; /* Red for Cancel */
+  color: white;
+}
+
+.modal-content form .btn[type="button"]:hover {
+  background-color: #005bb5; /* Darker red on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+
+/* Ensure buttons are the same height */
+.modal-content form .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Calendar Date Picker Styles */
+.react-datepicker {
+  border: 2px solid #007bff; /* Match modal accent color */
+  border-radius: 10px; /* Rounded corners for the calendar */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  font-size: 14px; /* Ensure readability */
+  background-color: #fff; /* White background for the calendar */
+}
+
+.react-datepicker__header {
+  background-color: #007bff; /* Header matches modal accent color */
+  color: #fff; /* White text in the header */
+  padding: 10px;
+  border-top-left-radius: 10px; /* Rounded top corners */
+  border-top-right-radius: 10px;
+  font-weight: bold;
+}
+
+.react-datepicker__day-name,
+.react-datepicker__day {
+  width: 36px; /* Uniform size for day cells */
+  height: 36px;
+  line-height: 36px;
+  margin: 2px;
+  color: #007bff; /* Text color matches modal theme */
+  font-weight: 500; /* Slightly bold */
+  border-radius: 50%; /* Circular days */
+  transition: all 0.2s ease; /* Smooth hover and selection animations */
+}
+
+.react-datepicker__day:hover {
+  background-color: #e6f7ff; /* Light blue on hover */
+  color: #0056b3; /* Darker blue text on hover */
+}
+
+.react-datepicker__day--selected {
+  background-color: #007bff; /* Blue background for selected day */
+  color: #fff; /* White text for selected day */
+  font-weight: bold;
+  border-radius: 50%;
+  transform: scale(1.1); /* Slight zoom effect for selected day */
+  transition: all 0.2s ease; /* Smooth transition */
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #005bb5; /* Darker blue for keyboard selection */
+  color: #fff;
+}
+
+.react-datepicker__current-month {
+  font-size: 16px; /* Larger font for the current month */
+  font-weight: bold;
+  color: #fff; /* Match header color */
+}
+
+.react-datepicker__navigation--previous {
+  border-right-color: #fff; /* White arrow for navigation */
+}
+
+.react-datepicker__navigation--next {
+  border-left-color: #fff; /* White arrow for navigation */
+}
+
+/* Calendar Date Picker Styles */
+.react-datepicker {
+  border: 1px solid #dcdcdc; /* Subtle border for cleaner look */
+  border-radius: 12px; /* Smoother rounded corners */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Soft shadow */
+  font-family: Arial, sans-serif; /* Clean font */
+  background-color: #ffffff; /* White background */
+  transition: transform 0.2s ease-in-out; /* Slight zoom animation */
+}
+
+.react-datepicker__header {
+  background-color: #007bff; /* Primary blue */
+  color: #ffffff; /* White text */
+  padding: 15px; /* Add some padding for a better look */
+  font-weight: bold; /* Highlighted header text */
+  border-top-left-radius: 12px; /* Match corner radius */
+  border-top-right-radius: 12px;
+  text-align: center; /* Center align the header text */
+}
+
+.react-datepicker__current-month {
+  font-size: 18px; /* Larger font for month and year */
+  margin-bottom: 5px;
+}
+
+.react-datepicker__day-name {
+  font-size: 14px; /* Smaller font for day names */
+  color: #666666; /* Subtle gray color */
+}
+
+.react-datepicker__day {
+  width: 40px; /* Consistent size for day cells */
+  height: 40px;
+  line-height: 40px;
+  margin: 2px;
+  font-size: 14px; /* Slightly larger font for readability */
+  color: #333333; /* Default text color */
+  font-weight: 500; /* Make it slightly bold */
+  border-radius: 50%; /* Circular day cells */
+  transition: all 0.2s ease; /* Smooth hover and selection */
+}
+
+.react-datepicker__day:hover {
+  background-color: #e6f7ff; /* Light blue background */
+  color: #007bff; /* Primary blue text */
+  transform: scale(1.1); /* Slightly larger on hover */
+}
+
+.react-datepicker__day--selected {
+  background-color: #007bff; /* Primary blue for selected day */
+  color: #ffffff; /* White text */
+  font-weight: bold;
+  border-radius: 50%;
+  transform: scale(1.2); /* Stand out for selected day */
+  transition: transform 0.2s ease; /* Smooth scaling */
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #005bb5; /* Slightly darker blue */
+  color: #ffffff; /* White text */
+}
+
+.react-datepicker__navigation {
+  background: transparent; /* Remove default background */
+  border: none; /* No border for arrows */
+}
+
+.react-datepicker__navigation--previous {
+  border-right-color: #ffffff; /* White arrow */
+}
+
+.react-datepicker__navigation--next {
+  border-left-color: #ffffff; /* White arrow */
+}
+
+.react-datepicker__navigation:hover {
+  transform: scale(1.2); /* Slight zoom on hover */
+}
+
+/* Calendar input styling */
+.modal-content form input[type="date"],
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: black;
+  background-color: #f9f9f9; /* Slightly gray background */
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+/* Override native calendar picker icon */
+.react-datepicker__input-container input::-webkit-calendar-picker-indicator {
+  display: none; /* Hide native picker icon */
+}
+/* View History Button Styles */
+.modal-content .view-history-button {
+  display: block; /* Ensure it occupies a full line */
+  width: auto; /* Automatically size it based on content */
+  margin: 20px auto 0; /* Center the button horizontally and add spacing above */
+  padding: 12px 20px; /* Consistent padding with other buttons */
+  font-size: 16px; /* Maintain consistent font size */
+  font-weight: bold; /* Bold text */
+  border: none; /* Remove border */
+  border-radius: 6px; /* Rounded corners for consistency */
+  background-color: #007bff; /* Primary button color */
+  color: white; /* White text */
+  text-align: center; /* Center-align text */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+}
+
+.modal-content .view-history-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+/* For consistent spacing and alignment */
+.modal .btn-container {
+  display: flex; /* Use flexbox for alignment */
+  justify-content: space-between; /* Ensure equal spacing between buttons */
+  gap: 15px; /* Add space between buttons */
+  margin-top: 20px; /* Spacing above the buttons */
+}
+
+/* Animation for calendar appearance */
+@keyframes fadeInCalendar {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.react-datepicker {
+  animation: fadeInCalendar 0.3s ease;
+}
+
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInBackground {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
