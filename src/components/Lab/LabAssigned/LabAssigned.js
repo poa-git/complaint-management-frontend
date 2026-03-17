@@ -73,11 +73,63 @@ const getStatusClass = (status) => {
   }
 };
 
+const InlineLoader = ({ text = "Loading..." }) => (
+  <span
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      fontSize: 13,
+      color: "#666",
+      fontWeight: 500,
+    }}
+  >
+    <span
+      style={{
+        width: 14,
+        height: 14,
+        border: "2px solid #d0d7de",
+        borderTop: "2px solid #3498db",
+        borderRadius: "50%",
+        display: "inline-block",
+        animation: "spin 0.8s linear infinite",
+      }}
+    />
+    {text}
+  </span>
+);
+
+const FullSectionLoader = ({ text = "Loading data..." }) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: 220,
+      width: "100%",
+      flexDirection: "column",
+      gap: 14,
+    }}
+  >
+    <span
+      style={{
+        width: 34,
+        height: 34,
+        border: "4px solid #dfe6e9",
+        borderTop: "4px solid #3498db",
+        borderRadius: "50%",
+        display: "inline-block",
+        animation: "spin 0.8s linear infinite",
+      }}
+    />
+    <span style={{ fontSize: 15, fontWeight: 600, color: "#555" }}>{text}</span>
+  </div>
+);
+
 const LabAssigned = ({ openRemarksModal }) => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Shared: view mode state
-  const [viewMode, setViewMode] = useState("table"); // "table" | "parts"
+  const [viewMode, setViewMode] = useState("table");
 
   // -------------------- Table View States ------------------------
   const [allLogs, setAllLogs] = useState([]);
@@ -96,18 +148,15 @@ const LabAssigned = ({ openRemarksModal }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const previousLogCountRef = useRef(0);
 
-  // NEW: carry parts log id into ReportModal
   const [selectedPartsLogIdForReports, setSelectedPartsLogIdForReports] =
     useState(null);
 
-  // Tooltip
   const [tooltipData, setTooltipData] = useState({
     content: "",
     position: { x: 0, y: 0 },
     isVisible: false,
   });
 
-  // Table view filters
   const [filters, setFilters] = useState({
     bankName: "",
     branchCode: "",
@@ -126,7 +175,7 @@ const LabAssigned = ({ openRemarksModal }) => {
   });
 
   // -------------------- Per-Part View States ------------------------
-  const [hardwareLogsParts, setHardwareLogsParts] = useState([]); // For part view
+  const [hardwareLogsParts, setHardwareLogsParts] = useState([]);
   const [hardwarePartsByLog, setHardwarePartsByLog] = useState({});
   const [partsFilters, setPartsFilters] = useState({
     bankName: "",
@@ -139,6 +188,19 @@ const LabAssigned = ({ openRemarksModal }) => {
   });
   const [partsCurrentPage, setPartsCurrentPage] = useState(1);
 
+  // -------------------- Loading States ------------------------
+  const [tableLoading, setTableLoading] = useState(false);
+  const [partsLoading, setPartsLoading] = useState(false);
+  const [workedTodayLoading, setWorkedTodayLoading] = useState(false);
+  const [exportingTable, setExportingTable] = useState(false);
+  const [exportingParts, setExportingParts] = useState(false);
+  const [openingReportFor, setOpeningReportFor] = useState(null);
+  const [markingDoneId, setMarkingDoneId] = useState(null);
+  const [dcUpdatingId, setDcUpdatingId] = useState(null);
+  const [loadingPartsMap, setLoadingPartsMap] = useState({});
+  const [reportAvailabilityLoading, setReportAvailabilityLoading] =
+    useState(false);
+
   // -------------------- Notifications and Sound ----------------------
   useEffect(() => {
     if (Notification.permission !== "granted") {
@@ -146,25 +208,28 @@ const LabAssigned = ({ openRemarksModal }) => {
     }
   }, []);
 
-  // Fetch worked today for table view
   useEffect(() => {
     if (viewMode === "table") {
+      setWorkedTodayLoading(true);
       axios
         .get(`${API_BASE_URL}/hardware-logs/lab-user/reports-today`, {
           withCredentials: true,
         })
         .then((res) => setWorkedTodayByUser(res.data || {}))
-        .catch(() => setWorkedTodayByUser({}));
+        .catch(() => setWorkedTodayByUser({}))
+        .finally(() => setWorkedTodayLoading(false));
     }
   }, [API_BASE_URL, viewMode]);
 
   const reloadWorkedTodayByUser = useCallback(() => {
+    setWorkedTodayLoading(true);
     axios
       .get(`${API_BASE_URL}/hardware-logs/lab-user/reports-today`, {
         withCredentials: true,
       })
       .then((res) => setWorkedTodayByUser(res.data || {}))
-      .catch(() => setWorkedTodayByUser({}));
+      .catch(() => setWorkedTodayByUser({}))
+      .finally(() => setWorkedTodayLoading(false));
   }, [API_BASE_URL]);
 
   const playNotificationSound = useCallback(() => {
@@ -182,107 +247,128 @@ const LabAssigned = ({ openRemarksModal }) => {
   }, []);
 
   // -------------------- Table View Data Fetch ------------------------
-  const fetchHardwareLogs = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/hardware-logs/assigned/${currentUsername}`,
-        { withCredentials: true }
-      );
-      const logs = Array.isArray(response.data) ? response.data : [];
-      setAllLogs(logs);
+  const fetchHardwareLogs = useCallback(
+    async (showLoader = true) => {
+      if (showLoader) setTableLoading(true);
 
-      // Same filtering logic as before
-      const relevantLogs = logs.filter((log) => {
-        if (
-          log.complaintLog?.complaintStatus === "Closed" ||
-          log.complaintLog?.complaintStatus === "Pending For Closed"
-        ) {
-          return false;
-        }
-        if (
-          log.complaintLog?.city?.toLowerCase() === "karachi" &&
-          log.courierStatus === "Received Outward"
-        ) {
-          if (log.complaintLog?.complaintStatus === "Approved") {
-            return !log.complaintLog?.dcGenerated;
-          } else {
-            return false;
-          }
-        }
-        if (
-          log.courierStatus === "Received Outward" &&
-          log.complaintLog?.city?.toLowerCase() !== "karachi"
-        ) {
-          return false;
-        }
-        if (log.done) return false;
-        if (log.courierStatus === "Dispatch Outward") {
-          if (log.complaintLog?.complaintStatus === "Approved") {
-            return !log.complaintLog?.dcGenerated;
-          } else {
-            return false;
-          }
-        }
-        const allowedStatuses = [
-          "Dispatch Inward",
-          "Received Inward",
-          "Hardware Ready",
-          "Additional Counter",
-          "Dispatch Outward",
-          "Observation",
-        ];
-        return allowedStatuses.includes(log.courierStatus);
-      });
-
-      // Detect new logs for notification
-      if (relevantLogs.length > previousLogCountRef.current) {
-        playNotificationSound();
-        showNotification(
-          "New Hardware Log",
-          "A new hardware log has been detected!"
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/hardware-logs/assigned/${currentUsername}`,
+          { withCredentials: true }
         );
-      }
-      previousLogCountRef.current = relevantLogs.length;
+        const logs = Array.isArray(response.data) ? response.data : [];
+        setAllLogs(logs);
 
-      setHardwareLogs(relevantLogs);
-    } catch (error) {
-      setAllLogs([]);
-      setHardwareLogs([]);
-    }
-  }, [API_BASE_URL, playNotificationSound, showNotification]);
+        const relevantLogs = logs.filter((log) => {
+          if (
+            log.complaintLog?.complaintStatus === "Closed" ||
+            log.complaintLog?.complaintStatus === "Pending For Closed"
+          ) {
+            return false;
+          }
+
+          if (
+            log.complaintLog?.city?.toLowerCase() === "karachi" &&
+            log.courierStatus === "Received Outward"
+          ) {
+            if (log.complaintLog?.complaintStatus === "Approved") {
+              return !log.complaintLog?.dcGenerated;
+            } else {
+              return false;
+            }
+          }
+
+          if (
+            log.courierStatus === "Received Outward" &&
+            log.complaintLog?.city?.toLowerCase() !== "karachi"
+          ) {
+            return false;
+          }
+
+          if (log.done) return false;
+
+          if (log.courierStatus === "Dispatch Outward") {
+            if (log.complaintLog?.complaintStatus === "Approved") {
+              return !log.complaintLog?.dcGenerated;
+            } else {
+              return false;
+            }
+          }
+
+          const allowedStatuses = [
+            "Dispatch Inward",
+            "Received Inward",
+            "Hardware Ready",
+            "Additional Counter",
+            "Dispatch Outward",
+            "Observation",
+          ];
+
+          return allowedStatuses.includes(log.courierStatus);
+        });
+
+        if (relevantLogs.length > previousLogCountRef.current) {
+          playNotificationSound();
+          showNotification(
+            "New Hardware Log",
+            "A new hardware log has been detected!"
+          );
+        }
+
+        previousLogCountRef.current = relevantLogs.length;
+        setHardwareLogs(relevantLogs);
+      } catch (error) {
+        setAllLogs([]);
+        setHardwareLogs([]);
+      } finally {
+        if (showLoader) setTableLoading(false);
+      }
+    },
+    [API_BASE_URL, playNotificationSound, showNotification]
+  );
 
   useEffect(() => {
     if (viewMode === "table") {
-      fetchHardwareLogs();
-      const interval = setInterval(fetchHardwareLogs, 120000);
+      fetchHardwareLogs(true);
+      const interval = setInterval(() => fetchHardwareLogs(false), 120000);
       return () => clearInterval(interval);
     }
   }, [fetchHardwareLogs, viewMode]);
 
   // -------------------- Part View Data Fetch ------------------------
-  const fetchHardwareLogsParts = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/hardware-logs/parts-assigned/${currentUsername}`,
-        { withCredentials: true }
-      );
-      setHardwareLogsParts(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      setHardwareLogsParts([]);
-    }
-  }, [API_BASE_URL]);
+  const fetchHardwareLogsParts = useCallback(
+    async (showLoader = true) => {
+      if (showLoader) setPartsLoading(true);
+
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/hardware-logs/parts-assigned/${currentUsername}`,
+          { withCredentials: true }
+        );
+        setHardwareLogsParts(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        setHardwareLogsParts([]);
+      } finally {
+        if (showLoader) setPartsLoading(false);
+      }
+    },
+    [API_BASE_URL]
+  );
 
   useEffect(() => {
     if (viewMode === "parts") {
-      fetchHardwareLogsParts();
-      const interval = setInterval(fetchHardwareLogsParts, 120000);
+      fetchHardwareLogsParts(true);
+      const interval = setInterval(() => fetchHardwareLogsParts(false), 120000);
       return () => clearInterval(interval);
     }
   }, [fetchHardwareLogsParts, viewMode]);
 
-  // Fetch parts for a given complaintLogId (used by parts view & ReportModal)
   const fetchPartsForLog = useCallback(
     async (complaintLogId) => {
+      if (!complaintLogId) return;
+
+      setLoadingPartsMap((prev) => ({ ...prev, [complaintLogId]: true }));
+
       try {
         const res = await axios.get(
           `${API_BASE_URL}/hardware-logs/${complaintLogId}/parts`,
@@ -290,30 +376,32 @@ const LabAssigned = ({ openRemarksModal }) => {
         );
         setHardwarePartsByLog((prev) => ({
           ...prev,
-          [complaintLogId]: res.data,
+          [complaintLogId]: Array.isArray(res.data) ? res.data : [],
         }));
       } catch (e) {
         setHardwarePartsByLog((prev) => ({
           ...prev,
           [complaintLogId]: [],
         }));
+      } finally {
+        setLoadingPartsMap((prev) => ({ ...prev, [complaintLogId]: false }));
       }
     },
     [API_BASE_URL]
   );
 
-  // Prefetch parts list for visible rows in parts view
   useEffect(() => {
     if (viewMode !== "parts") return;
+
     hardwareLogsParts.forEach((log) => {
       const partKey = log.complaintLog?.id;
-      if (partKey && hardwarePartsByLog[partKey] === undefined)
+      if (partKey && hardwarePartsByLog[partKey] === undefined) {
         fetchPartsForLog(partKey);
+      }
     });
-    // eslint-disable-next-line
   }, [hardwareLogsParts, hardwarePartsByLog, fetchPartsForLog, viewMode]);
 
-  // -------------------- Report availability (for grey "No Reports" button) ------------------------
+  // -------------------- Report availability ------------------------
   useEffect(() => {
     const fetchReportStatus = async () => {
       const ids = [
@@ -326,6 +414,8 @@ const LabAssigned = ({ openRemarksModal }) => {
       ].filter((id) => reportAvailability[id] === undefined);
 
       if (ids.length === 0) return;
+
+      setReportAvailabilityLoading(true);
       try {
         const res = await axios.post(
           `${API_BASE_URL}/hardware-logs/reports/availability`,
@@ -335,12 +425,15 @@ const LabAssigned = ({ openRemarksModal }) => {
         setReportAvailability((prev) => ({ ...prev, ...res.data }));
       } catch (e) {
         // silent
+      } finally {
+        setReportAvailabilityLoading(false);
       }
     };
+
     fetchReportStatus();
   }, [API_BASE_URL, hardwareLogs, hardwareLogsParts, reportAvailability]);
 
-  // -------------------- Table View Filtering ------------------------
+  // -------------------- Filter Options ------------------------
   const bankOptions = useMemo(() => {
     const setVals = new Set();
     const logs = viewMode === "table" ? hardwareLogs : hardwareLogsParts;
@@ -372,8 +465,9 @@ const LabAssigned = ({ openRemarksModal }) => {
     const setVals = new Set();
     const logs = viewMode === "table" ? hardwareLogs : hardwareLogsParts;
     logs.forEach((log) => {
-      if (log.complaintLog?.complaintStatus)
+      if (log.complaintLog?.complaintStatus) {
         setVals.add(log.complaintLog.complaintStatus);
+      }
     });
     return ["", ...Array.from(setVals)];
   }, [hardwareLogs, hardwareLogsParts, viewMode]);
@@ -381,6 +475,7 @@ const LabAssigned = ({ openRemarksModal }) => {
   // -------------------- Filtering: Table View ------------------------
   const userFilteredLogs = useMemo(() => {
     if (viewMode !== "table") return [];
+
     return hardwareLogs.filter((log) => {
       const {
         bankName,
@@ -418,6 +513,7 @@ const LabAssigned = ({ openRemarksModal }) => {
           bankName.toLowerCase()
       )
         return false;
+
       if (
         branchName &&
         !(log.complaintLog?.branchName || "")
@@ -425,29 +521,32 @@ const LabAssigned = ({ openRemarksModal }) => {
           .includes(branchName.toLowerCase())
       )
         return false;
+
       if (
         city &&
         (log.complaintLog?.city || "").toLowerCase() !== city.toLowerCase()
       )
         return false;
+
       if (filters.workedTodayUser) {
         const userIds = workedTodayByUser[filters.workedTodayUser] || [];
-        if (
-          !userIds.map(String).includes(String(log.complaintLog?.complaintId))
-        )
+        if (!userIds.map(String).includes(String(log.complaintLog?.complaintId)))
           return false;
       }
+
       if (
         courierStatus &&
         (log.courierStatus || "").toLowerCase() !== courierStatus.toLowerCase()
       )
         return false;
+
       if (
         complaintStatus &&
         (log.complaintLog?.complaintStatus || "").toLowerCase() !==
           complaintStatus.toLowerCase()
       )
         return false;
+
       if (
         equipmentDescription &&
         !(log.equipmentDescription || "")
@@ -455,9 +554,11 @@ const LabAssigned = ({ openRemarksModal }) => {
           .includes(equipmentDescription.toLowerCase())
       )
         return false;
+
       if (staff && (log.staff || "").toLowerCase() !== staff.toLowerCase()) {
         return false;
       }
+
       if (
         dispatchCnNumber &&
         !(log.dispatchCnNumber || "")
@@ -465,6 +566,7 @@ const LabAssigned = ({ openRemarksModal }) => {
           .includes(dispatchCnNumber.toLowerCase())
       )
         return false;
+
       if (
         branchCode &&
         !(log.complaintLog?.branchCode || "")
@@ -472,21 +574,26 @@ const LabAssigned = ({ openRemarksModal }) => {
           .includes(branchCode.toLowerCase())
       )
         return false;
+
       if (!isSameDate(diDate, dispatchInwardDate)) return false;
       if (!isSameDate(riDate, receivedInwardDate)) return false;
       if (!isSameDate(hDate, hOkDate)) return false;
+
       if (onlyFOCApproved) {
         const isFOCOrApproved =
           log.complaintLog?.complaintStatus === "FOC" ||
           log.complaintLog?.complaintStatus === "Approved";
+
         const isHardwareReadyOrDispatchOutward =
           log.courierStatus === "Hardware Ready" ||
           log.courierStatus === "Dispatch Outward" ||
           log.courierStatus === "Received Outward";
+
         if (!(isFOCOrApproved && isHardwareReadyOrDispatchOutward)) {
           return false;
         }
       }
+
       return true;
     });
   }, [hardwareLogs, filters, workedTodayByUser, viewMode]);
@@ -494,6 +601,7 @@ const LabAssigned = ({ openRemarksModal }) => {
   // -------------------- Filtering: Parts View ------------------------
   const filteredLogsParts = useMemo(() => {
     if (viewMode !== "parts") return [];
+
     return hardwareLogsParts.filter((log) => {
       const partKey = log.complaintLog?.id;
       const parts = hardwarePartsByLog[partKey] || [];
@@ -514,6 +622,7 @@ const LabAssigned = ({ openRemarksModal }) => {
           bankName.toLowerCase()
       )
         return false;
+
       if (
         branchName &&
         !(log.complaintLog?.branchName || "")
@@ -521,6 +630,7 @@ const LabAssigned = ({ openRemarksModal }) => {
           .includes(branchName.toLowerCase())
       )
         return false;
+
       if (
         branchCode &&
         !(log.complaintLog?.branchCode || "")
@@ -528,22 +638,26 @@ const LabAssigned = ({ openRemarksModal }) => {
           .includes(branchCode.toLowerCase())
       )
         return false;
+
       if (
         city &&
         (log.complaintLog?.city || "").toLowerCase() !== city.toLowerCase()
       )
         return false;
+
       if (
         complaintStatus &&
         (log.complaintLog?.complaintStatus || "").toLowerCase() !==
           complaintStatus.toLowerCase()
       )
         return false;
+
       if (
         courierStatus &&
         (log.courierStatus || "").toLowerCase() !== courierStatus.toLowerCase()
       )
         return false;
+
       if (
         equipmentDescription &&
         !(log.equipmentDescription || "")
@@ -551,7 +665,7 @@ const LabAssigned = ({ openRemarksModal }) => {
           .includes(equipmentDescription.toLowerCase())
       )
         return false;
-      // Only include if at least one part assigned to me and NOT repaired/notRepairable
+
       return parts.some(
         (p) =>
           p.assignedEngineer?.trim().toLowerCase() === currentUsername &&
@@ -587,20 +701,23 @@ const LabAssigned = ({ openRemarksModal }) => {
     let end = Math.min(totalPages, currPage + half);
 
     if (currPage <= half) end = Math.min(totalPages, maxVisiblePages);
-    if (currPage > totalPages - half)
+    if (currPage > totalPages - half) {
       start = Math.max(1, totalPages - maxVisiblePages + 1);
+    }
 
     for (let i = start; i <= end; i++) pages.push(i);
     return pages;
   };
 
-  // -------------------- Export to Excel (shared, view specific) ------------------------
-  // Table view
+  // -------------------- Export to Excel ------------------------
   const exportToExcelTable = async () => {
+    setExportingTable(true);
     try {
       const complaintIdsToFetch = userFilteredLogs
         .map((log) => log.complaintLog?.complaintId)
         .filter((id) => id && reportContents[id] === undefined);
+
+      const fetchedReports = {};
 
       await Promise.all(
         complaintIdsToFetch.map(async (complaintId) => {
@@ -612,12 +729,16 @@ const LabAssigned = ({ openRemarksModal }) => {
             const contents = response.data
               .map((r, i) => `Report ${i + 1}:\n${r.content.trim()}`)
               .join("\n\n");
-            reportContents[complaintId] = contents || "No Reports";
+            fetchedReports[complaintId] = contents || "No Reports";
           } catch (err) {
-            reportContents[complaintId] = "No Reports";
+            fetchedReports[complaintId] = "No Reports";
           }
         })
       );
+
+      if (Object.keys(fetchedReports).length > 0) {
+        setReportContents((prev) => ({ ...prev, ...fetchedReports }));
+      }
 
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Lab Report");
@@ -668,9 +789,15 @@ const LabAssigned = ({ openRemarksModal }) => {
       };
 
       userFilteredLogs.forEach((log, index) => {
+        const currentReportContents = {
+          ...reportContents,
+          ...fetchedReports,
+        };
+
         const reportContent = cleanText(
-          reportContents[log.complaintLog?.complaintId] || "No Reports"
+          currentReportContents[log.complaintLog?.complaintId] || "No Reports"
         );
+
         const workedByUsers = Object.entries(workedTodayByUser)
           .filter(([user, ids]) =>
             ids.map(String).includes(String(log.complaintLog?.complaintId))
@@ -721,16 +848,20 @@ const LabAssigned = ({ openRemarksModal }) => {
       const buffer = await workbook.xlsx.writeBuffer();
       saveAs(new Blob([buffer]), "LabReport.xlsx");
     } catch (error) {
-      // silent
+      alert("Failed to export table report.");
+    } finally {
+      setExportingTable(false);
     }
   };
 
-  // Per-part view
   const exportToExcelParts = async () => {
+    setExportingParts(true);
     try {
       const complaintIdsToFetch = filteredLogsParts
         .map((log) => log.complaintLog?.complaintId)
         .filter((id) => id && reportContents[id] === undefined);
+
+      const fetchedReports = {};
 
       await Promise.all(
         complaintIdsToFetch.map(async (complaintId) => {
@@ -742,15 +873,20 @@ const LabAssigned = ({ openRemarksModal }) => {
             const contents = response.data
               .map((r, i) => `Report ${i + 1}:\n${r.content.trim()}`)
               .join("\n\n");
-            reportContents[complaintId] = contents || "No Reports";
+            fetchedReports[complaintId] = contents || "No Reports";
           } catch (err) {
-            reportContents[complaintId] = "No Reports";
+            fetchedReports[complaintId] = "No Reports";
           }
         })
       );
 
+      if (Object.keys(fetchedReports).length > 0) {
+        setReportContents((prev) => ({ ...prev, ...fetchedReports }));
+      }
+
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Lab Report");
+
       worksheet.columns = [
         { header: "S.No", key: "s_no", width: 8 },
         { header: "Complaint ID", key: "complaint_id", width: 15 },
@@ -763,6 +899,7 @@ const LabAssigned = ({ openRemarksModal }) => {
         { header: "Equipment", key: "equipment_description", width: 20 },
         { header: "Reports", key: "reports", width: 40 },
       ];
+
       worksheet.getRow(1).eachCell((cell) => {
         cell.alignment = {
           horizontal: "center",
@@ -779,6 +916,11 @@ const LabAssigned = ({ openRemarksModal }) => {
           .trim();
 
       filteredLogsParts.forEach((log, index) => {
+        const currentReportContents = {
+          ...reportContents,
+          ...fetchedReports,
+        };
+
         worksheet.addRow({
           s_no: index + 1,
           complaint_id: log.complaintLog?.complaintId || "N/A",
@@ -790,7 +932,7 @@ const LabAssigned = ({ openRemarksModal }) => {
           city: log.complaintLog?.city || "N/A",
           equipment_description: log.equipmentDescription || "N/A",
           reports: cleanText(
-            reportContents[log.complaintLog?.complaintId] || "No Reports"
+            currentReportContents[log.complaintLog?.complaintId] || "No Reports"
           ),
         });
       });
@@ -809,12 +951,16 @@ const LabAssigned = ({ openRemarksModal }) => {
 
       const buffer = await workbook.xlsx.writeBuffer();
       saveAs(new Blob([buffer]), "LabAssigned.xlsx");
-    } catch (error) {}
+    } catch (error) {
+      alert("Failed to export parts report.");
+    } finally {
+      setExportingParts(false);
+    }
   };
 
   // -------------------- Other Handlers ------------------------
-  // Table view
   const handleMarkDone = async (log) => {
+    setMarkingDoneId(log.id);
     try {
       await axios.patch(
         `${API_BASE_URL}/hardware-logs/${log.id}/done`,
@@ -824,33 +970,41 @@ const LabAssigned = ({ openRemarksModal }) => {
       setHardwareLogs((prev) => prev.filter((l) => l.id !== log.id));
     } catch (error) {
       alert("Failed to mark as done: " + error.message);
+    } finally {
+      setMarkingDoneId(null);
     }
   };
+
   const handleToggleDcGenerated = async (log, newValue) => {
+    setDcUpdatingId(log.id);
     try {
       await axios.patch(
         `${API_BASE_URL}/complaints/${log.complaintLog.id}/dc-generated`,
         { dcGenerated: newValue },
         { withCredentials: true }
       );
-      fetchHardwareLogs();
+      await fetchHardwareLogs(false);
     } catch (err) {
       alert("Failed to update DC Generated status: " + err.message);
+    } finally {
+      setDcUpdatingId(null);
     }
   };
+
   const openModal = (log) => {
     setSelectedLog(log);
     setIsModalOpen(true);
   };
+
   const closeModal = () => {
     setSelectedLog(null);
     setIsModalOpen(false);
   };
+
   const refreshLogs = () => {
-    fetchHardwareLogs();
+    fetchHardwareLogs(false);
   };
 
-  // Helper: resolve a log by its parts log id from either list
   const getLogByPartId = useCallback(
     (partId) =>
       hardwareLogs.find((l) => l.complaintLog?.id === partId) ||
@@ -858,15 +1012,22 @@ const LabAssigned = ({ openRemarksModal }) => {
     [hardwareLogs, hardwareLogsParts]
   );
 
-  // Open Reports modal with both complaintId & partsLogId
-  const openReportsForComplaint = (complaintId, partsLogId) => {
-    setSelectedComplaintIdForReports(complaintId);
-    setSelectedPartsLogIdForReports(partsLogId || null);
-    if (partsLogId) {
-      fetchPartsForLog(partsLogId); // ensure modal has fresh parts
+  const openReportsForComplaint = async (complaintId, partsLogId) => {
+    setOpeningReportFor(complaintId);
+    try {
+      setSelectedComplaintIdForReports(complaintId);
+      setSelectedPartsLogIdForReports(partsLogId || null);
+
+      if (partsLogId) {
+        await fetchPartsForLog(partsLogId);
+      }
+
+      setIsReportModalOpen(true);
+    } finally {
+      setOpeningReportFor(null);
     }
-    setIsReportModalOpen(true);
   };
+
   const closeReportModal = () => {
     setSelectedComplaintIdForReports(null);
     setSelectedPartsLogIdForReports(null);
@@ -876,9 +1037,9 @@ const LabAssigned = ({ openRemarksModal }) => {
   const handleViewHistory = (complaintId) => {
     setSelectedComplaintId(complaintId);
   };
+
   const handleBackToTable = () => setSelectedComplaintId(null);
 
-  // Tooltip logic
   const showTooltip = (e, content) => {
     const rect = e.target.getBoundingClientRect();
     setTooltipData({
@@ -890,11 +1051,11 @@ const LabAssigned = ({ openRemarksModal }) => {
       isVisible: true,
     });
   };
+
   const hideTooltip = () => {
     setTooltipData((prev) => ({ ...prev, isVisible: false }));
   };
 
-  // Filter change (table)
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFilters((prev) => ({
@@ -924,7 +1085,6 @@ const LabAssigned = ({ openRemarksModal }) => {
     setCurrentPage(1);
   }, []);
 
-  // Filter change (parts)
   const handlePartsFilterChange = (e) => {
     const { name, value } = e.target;
     setPartsFilters((prev) => ({
@@ -934,9 +1094,23 @@ const LabAssigned = ({ openRemarksModal }) => {
     setPartsCurrentPage(1);
   };
 
-  // -------------- Render --------------
   return (
     <div className="hardware-log-container">
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+
+          .loading-button {
+            opacity: 0.8;
+            cursor: not-allowed !important;
+            pointer-events: none;
+          }
+        `}
+      </style>
+
       <div className="lab-toggle-switch">
         <input
           type="radio"
@@ -978,8 +1152,8 @@ const LabAssigned = ({ openRemarksModal }) => {
         <>
           <h2 className="hardware-log-heading">Lab Hardware</h2>
           <h3>Filters</h3>
+
           <div className="filter-section">
-            {/* Bank */}
             <div className="filter-group">
               <label className="filter-label">Bank Name:</label>
               <select
@@ -995,7 +1169,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Branch Name */}
+
             <div className="filter-group">
               <label className="filter-label">Branch Name:</label>
               <input
@@ -1007,7 +1181,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 placeholder="Branch Name"
               />
             </div>
-            {/* Branch Code */}
+
             <div className="filter-group">
               <label className="filter-label">Branch Code:</label>
               <input
@@ -1019,7 +1193,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 placeholder="Branch Code"
               />
             </div>
-            {/* City */}
+
             <div className="filter-group">
               <label className="filter-label">City:</label>
               <select
@@ -1035,7 +1209,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Complaint Status */}
+
             <div className="filter-group">
               <label className="filter-label">Complaint Status:</label>
               <select
@@ -1051,7 +1225,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Courier Status */}
+
             <div className="filter-group">
               <label className="filter-label">Courier Status:</label>
               <select
@@ -1067,7 +1241,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Dispatch CN Number */}
+
             <div className="filter-group">
               <label className="filter-label">CN Number:</label>
               <input
@@ -1079,7 +1253,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 placeholder="Enter CN Number"
               />
             </div>
-            {/* Dispatch Inward Date */}
+
             <div className="filter-group">
               <label className="filter-label">Dispatch Inward Date:</label>
               <input
@@ -1090,7 +1264,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 className="filter-input date-filter"
               />
             </div>
-            {/* Received Inward Date */}
+
             <div className="filter-group">
               <label className="filter-label">Received Inward Date:</label>
               <input
@@ -1101,7 +1275,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 className="filter-input date-filter"
               />
             </div>
-            {/* H Ok Date */}
+
             <div className="filter-group">
               <label className="filter-label">Hardware OK Date:</label>
               <input
@@ -1112,7 +1286,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 className="filter-input date-filter"
               />
             </div>
-            {/* Equipment Description */}
+
             <div className="filter-group">
               <label className="filter-label">Equipment:</label>
               <input
@@ -1124,7 +1298,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 placeholder="Partial match"
               />
             </div>
-            {/* Worked Today */}
+
             <div className="filter-group">
               <label className="filter-label">Worked Today By User:</label>
               <select
@@ -1132,8 +1306,11 @@ const LabAssigned = ({ openRemarksModal }) => {
                 value={filters.workedTodayUser}
                 onChange={handleFilterChange}
                 className="filter-input"
+                disabled={workedTodayLoading}
               >
-                <option value="">All Users</option>
+                <option value="">
+                  {workedTodayLoading ? "Loading users..." : "All Users"}
+                </option>
                 {Object.keys(workedTodayByUser).map((user) => (
                   <option key={user} value={user}>
                     {user}
@@ -1141,7 +1318,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Only FOC/Approved Filter */}
+
             <div className="filter-group filter-checkbox-group">
               <label className="filter-label">
                 <input
@@ -1154,15 +1331,22 @@ const LabAssigned = ({ openRemarksModal }) => {
                 Only FOC / Approved (Hardware Ready)
               </label>
             </div>
+
             <button className="clear-filters" onClick={clearFilters}>
               Clear Filters
             </button>
           </div>
+
           <div className="export-button-container">
-            <button onClick={exportToExcelTable} className="generate-report">
-              Generate Report
+            <button
+              onClick={exportToExcelTable}
+              className={`generate-report ${exportingTable ? "loading-button" : ""}`}
+              disabled={exportingTable || tableLoading}
+            >
+              {exportingTable ? "Generating Excel..." : "Generate Report"}
             </button>
           </div>
+
           <div className="table-wrapper">
             {selectedComplaintId ? (
               <div>
@@ -1171,6 +1355,8 @@ const LabAssigned = ({ openRemarksModal }) => {
                 </button>
                 <ComplaintReport complaintId={selectedComplaintId} />
               </div>
+            ) : tableLoading ? (
+              <FullSectionLoader text="Loading hardware logs..." />
             ) : (
               <>
                 <table className="complaint-table">
@@ -1179,7 +1365,6 @@ const LabAssigned = ({ openRemarksModal }) => {
                       <th>S.No</th>
                       <th>Update</th>
                       <th>Done</th>
-                      {/* <th>Remarks</th> */}
                       <th>Complaint Status</th>
                       <th>Courier Status</th>
                       <th>DC Generated</th>
@@ -1212,7 +1397,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                           <td>
                             {index + 1 + (currentPage - 1) * recordsPerPage}
                           </td>
-                          {/* Update button */}
+
                           <td>
                             <button
                               className="update-button"
@@ -1224,22 +1409,24 @@ const LabAssigned = ({ openRemarksModal }) => {
                               Update
                             </button>
                           </td>
-                          {/* Done button */}
+
                           <td>
                             {!log.done && (
                               <button
-                                className="done-button"
+                                className={`done-button ${
+                                  markingDoneId === log.id ? "loading-button" : ""
+                                }`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleMarkDone(log);
                                 }}
+                                disabled={markingDoneId === log.id}
                               >
-                                Done
+                                {markingDoneId === log.id ? "Processing..." : "Done"}
                               </button>
                             )}
                           </td>
-                          {/* Remarks button (kept commented in original) */}
-                          {/* <td> ... </td> */}
+
                           <td
                             className={`status-cell ${getStatusClass(
                               log.complaintLog?.complaintStatus
@@ -1247,6 +1434,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                           >
                             {log.complaintLog?.complaintStatus || "N/A"}
                           </td>
+
                           <td
                             className={`status-cell ${getStatusClass(
                               log.courierStatus
@@ -1254,11 +1442,12 @@ const LabAssigned = ({ openRemarksModal }) => {
                           >
                             {log.courierStatus || "N/A"}
                           </td>
+
                           <td>
                             {log.complaintLog?.complaintStatus === "Approved" &&
                               (log.complaintLog?.dcGenerated ? (
                                 <span
-                                  className={`dc-chip dc-on`}
+                                  className="dc-chip dc-on"
                                   style={{
                                     cursor: "not-allowed",
                                     opacity: 0.7,
@@ -1267,25 +1456,30 @@ const LabAssigned = ({ openRemarksModal }) => {
                                 >
                                   DC Generated
                                 </span>
-                              ) : // DC not generated yet
-                              currentUsername === "khurram" ||
+                              ) : currentUsername === "khurram" ||
                                 currentUserRole === "admin" ? (
                                 <span
-                                  className={`dc-chip dc-off`}
+                                  className="dc-chip dc-off"
                                   onClick={() =>
-                                    handleToggleDcGenerated(
-                                      log,
-                                      true // set DC as generated
-                                    )
+                                    dcUpdatingId !== log.id &&
+                                    handleToggleDcGenerated(log, true)
                                   }
-                                  style={{ cursor: "pointer" }}
+                                  style={{
+                                    cursor:
+                                      dcUpdatingId === log.id
+                                        ? "not-allowed"
+                                        : "pointer",
+                                    opacity: dcUpdatingId === log.id ? 0.7 : 1,
+                                  }}
                                   title="Click to mark DC as generated"
                                 >
-                                  Mark DC
+                                  {dcUpdatingId === log.id
+                                    ? "Updating..."
+                                    : "Mark DC"}
                                 </span>
                               ) : (
                                 <span
-                                  className={`dc-chip dc-off`}
+                                  className="dc-chip dc-off"
                                   style={{
                                     cursor: "not-allowed",
                                     opacity: 0.7,
@@ -1296,35 +1490,48 @@ const LabAssigned = ({ openRemarksModal }) => {
                                 </span>
                               ))}
                           </td>
-                          {/* Reports button with conditional styling */}
+
                           <td>
                             <button
                               className={`view-report-button ${
-                                reportAvailability[
-                                  log.complaintLog?.complaintId
-                                ] === false
+                                reportAvailability[log.complaintLog?.complaintId] ===
+                                false
                                   ? "grey-button"
+                                  : ""
+                              } ${
+                                openingReportFor === log.complaintLog?.complaintId
+                                  ? "loading-button"
                                   : ""
                               }`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 openReportsForComplaint(
                                   log.complaintLog?.complaintId,
-                                  log.complaintLog?.id // parts log id
+                                  log.complaintLog?.id
                                 );
                               }}
+                              disabled={
+                                openingReportFor === log.complaintLog?.complaintId
+                              }
                             >
-                              {reportAvailability[
-                                log.complaintLog?.complaintId
-                              ] === false
+                              {openingReportFor === log.complaintLog?.complaintId
+                                ? "Opening..."
+                                : reportAvailability[log.complaintLog?.complaintId] ===
+                                  false
                                 ? "No Reports"
+                                : reportAvailabilityLoading &&
+                                  reportAvailability[log.complaintLog?.complaintId] ===
+                                    undefined
+                                ? "Checking..."
                                 : "View Reports"}
                             </button>
                           </td>
+
                           <td>{log.complaintLog?.bankName || "N/A"}</td>
                           <td>{log.complaintLog?.branchName || "N/A"}</td>
                           <td>{log.complaintLog?.branchCode || "N/A"}</td>
                           <td>{log.complaintLog?.city || "N/A"}</td>
+
                           <td>
                             <div
                               className="tooltip-container"
@@ -1341,6 +1548,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                               </span>
                             </div>
                           </td>
+
                           <td>
                             <div
                               className="tooltip-container"
@@ -1354,19 +1562,28 @@ const LabAssigned = ({ openRemarksModal }) => {
                               </span>
                             </div>
                           </td>
+
                           <td>
-                            {Object.entries(workedTodayByUser)
-                              .filter(([user, ids]) =>
-                                ids
-                                  .map(String)
-                                  .includes(
-                                    String(log.complaintLog?.complaintId)
-                                  )
-                              )
-                              .map(([user]) => user)
-                              .join(", ")}
+                            {workedTodayLoading ? (
+                              <span style={{ color: "#888", fontSize: 12 }}>
+                                Loading...
+                              </span>
+                            ) : (
+                              Object.entries(workedTodayByUser)
+                                .filter(([user, ids]) =>
+                                  ids
+                                    .map(String)
+                                    .includes(
+                                      String(log.complaintLog?.complaintId)
+                                    )
+                                )
+                                .map(([user]) => user)
+                                .join(", ")
+                            )}
                           </td>
+
                           <td>{log.complaintLog?.complaintId || "N/A"}</td>
+
                           <td>
                             <button
                               className="view-history-button"
@@ -1384,13 +1601,14 @@ const LabAssigned = ({ openRemarksModal }) => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="17" className="no-data">
+                        <td colSpan="16" className="no-data">
                           No hardware logs available.
                         </td>
                       </tr>
                     )}
                   </tbody>
                 </table>
+
                 {tooltipData.isVisible && (
                   <div
                     className="portal-tooltip"
@@ -1405,7 +1623,8 @@ const LabAssigned = ({ openRemarksModal }) => {
               </>
             )}
           </div>
-          {userFilteredLogs.length > 0 && (
+
+          {!tableLoading && userFilteredLogs.length > 0 && (
             <div className="pagination-container">
               <button
                 className="page-button"
@@ -1414,6 +1633,7 @@ const LabAssigned = ({ openRemarksModal }) => {
               >
                 &lt;
               </button>
+
               {getVisiblePages(tableTotalPages, currentPage).map((page) => (
                 <button
                   key={page}
@@ -1425,6 +1645,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                   {page}
                 </button>
               ))}
+
               <button
                 className="page-button"
                 onClick={() =>
@@ -1436,7 +1657,7 @@ const LabAssigned = ({ openRemarksModal }) => {
               </button>
             </div>
           )}
-          {/* LabLogModal for updating hardware log courier status, etc. */}
+
           <LabLogModal
             isOpen={isModalOpen}
             selectedLog={selectedLog}
@@ -1444,21 +1665,20 @@ const LabAssigned = ({ openRemarksModal }) => {
             refreshLogs={refreshLogs}
             complaintStatus={selectedLog?.complaintLog?.complaintStatus}
           />
-          {/* ReportModal for handling multiple reports with Parts tab */}
+
           <ReportModal
             isOpen={isReportModalOpen}
             complaintId={selectedComplaintIdForReports}
             handleClose={closeReportModal}
             allowAdd
             onReportAdded={async (complaintId) => {
-              // 1) Optimistic
               setReportAvailability((prev) => ({
                 ...prev,
                 [complaintId]: true,
               }));
-              // 2) Refresh worked today
+
               reloadWorkedTodayByUser();
-              // 3) Verify availability from backend
+
               try {
                 const res = await axios.post(
                   `${API_BASE_URL}/hardware-logs/reports/availability`,
@@ -1471,7 +1691,6 @@ const LabAssigned = ({ openRemarksModal }) => {
                 }));
               } catch {}
             }}
-            /* Parts context for the modal */
             partsLogId={selectedPartsLogIdForReports}
             API_BASE_URL={API_BASE_URL}
             hardwareParts={
@@ -1484,7 +1703,6 @@ const LabAssigned = ({ openRemarksModal }) => {
                 fetchPartsForLog(selectedPartsLogIdForReports);
               }
             }}
-            /* Bank/branch context (look up from either list) */
             bankName={
               getLogByPartId(selectedPartsLogIdForReports)?.complaintLog
                 ?.bankName
@@ -1507,8 +1725,8 @@ const LabAssigned = ({ openRemarksModal }) => {
           <h2 className="hardware-log-heading">
             Assigned Hardware Logs (Per Part)
           </h2>
+
           <div className="filter-section">
-            {/* Bank */}
             <div className="filter-group">
               <label className="filter-label">Bank Name:</label>
               <select
@@ -1524,7 +1742,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Branch Name */}
+
             <div className="filter-group">
               <label className="filter-label">Branch Name:</label>
               <input
@@ -1536,7 +1754,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 placeholder="Branch Name"
               />
             </div>
-            {/* Branch Code */}
+
             <div className="filter-group">
               <label className="filter-label">Branch Code:</label>
               <input
@@ -1548,7 +1766,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 placeholder="Branch Code"
               />
             </div>
-            {/* City */}
+
             <div className="filter-group">
               <label className="filter-label">City:</label>
               <select
@@ -1564,7 +1782,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Complaint Status */}
+
             <div className="filter-group">
               <label className="filter-label">Complaint Status:</label>
               <select
@@ -1580,7 +1798,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Courier Status */}
+
             <div className="filter-group">
               <label className="filter-label">Courier Status:</label>
               <select
@@ -1596,7 +1814,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 ))}
               </select>
             </div>
-            {/* Equipment Description */}
+
             <div className="filter-group">
               <label className="filter-label">Equipment:</label>
               <input
@@ -1608,14 +1826,17 @@ const LabAssigned = ({ openRemarksModal }) => {
                 placeholder="Partial match"
               />
             </div>
+
             <button
-              className="generate-report"
+              className={`generate-report ${exportingParts ? "loading-button" : ""}`}
               style={{ marginLeft: 20 }}
               onClick={exportToExcelParts}
+              disabled={exportingParts || partsLoading}
             >
-              Generate Report (Excel)
+              {exportingParts ? "Generating Excel..." : "Generate Report (Excel)"}
             </button>
           </div>
+
           <div className="table-wrapper">
             {selectedComplaintId ? (
               <div>
@@ -1624,6 +1845,8 @@ const LabAssigned = ({ openRemarksModal }) => {
                 </button>
                 <ComplaintReport complaintId={selectedComplaintId} />
               </div>
+            ) : partsLoading ? (
+              <FullSectionLoader text="Loading assigned parts logs..." />
             ) : (
               <table className="complaint-table">
                 <thead>
@@ -1649,11 +1872,14 @@ const LabAssigned = ({ openRemarksModal }) => {
                       const parts = hardwarePartsByLog[partKey] || [];
                       const total = parts.length;
                       const repaired = parts.filter((p) => p.repaired).length;
+                      const isPartsLoading = loadingPartsMap[partKey];
+
                       return (
                         <tr key={log.id}>
                           <td>
                             {idx + 1 + (partsCurrentPage - 1) * recordsPerPage}
                           </td>
+
                           <td
                             className={`status-cell ${getStatusClass(
                               log.complaintLog?.complaintStatus
@@ -1661,6 +1887,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                           >
                             {log.complaintLog?.complaintStatus || "N/A"}
                           </td>
+
                           <td
                             className={`status-cell ${getStatusClass(
                               log.courierStatus
@@ -1668,18 +1895,23 @@ const LabAssigned = ({ openRemarksModal }) => {
                           >
                             {log.courierStatus || "N/A"}
                           </td>
+
                           <td>{log.complaintLog?.bankName || "N/A"}</td>
                           <td>{log.complaintLog?.branchName || "N/A"}</td>
                           <td>{log.complaintLog?.branchCode || "N/A"}</td>
                           <td>{log.complaintLog?.city || "N/A"}</td>
                           <td>{log.equipmentDescription || "N/A"}</td>
+
                           <td>
                             <button
                               className={`view-report-button ${
-                                reportAvailability[
-                                  log.complaintLog?.complaintId
-                                ] === false
+                                reportAvailability[log.complaintLog?.complaintId] ===
+                                false
                                   ? "grey-button"
+                                  : ""
+                              } ${
+                                openingReportFor === log.complaintLog?.complaintId
+                                  ? "loading-button"
                                   : ""
                               }`}
                               onClick={() =>
@@ -1688,108 +1920,125 @@ const LabAssigned = ({ openRemarksModal }) => {
                                   partKey
                                 )
                               }
+                              disabled={
+                                openingReportFor === log.complaintLog?.complaintId
+                              }
                             >
-                              {reportAvailability[
-                                log.complaintLog?.complaintId
-                              ] === false
+                              {openingReportFor === log.complaintLog?.complaintId
+                                ? "Opening..."
+                                : reportAvailability[log.complaintLog?.complaintId] ===
+                                  false
                                 ? "No Reports"
+                                : reportAvailabilityLoading &&
+                                  reportAvailability[log.complaintLog?.complaintId] ===
+                                    undefined
+                                ? "Checking..."
                                 : "View Reports"}
                             </button>
                           </td>
-                          {/* Parts preview (read-only) */}
+
                           <td>
-                            {hardwarePartsByLog[partKey] === undefined ? (
-                              <span style={{ fontSize: 12, color: "#aaa" }}>
-                                Loading...
-                              </span>
+                            {isPartsLoading ? (
+                              <InlineLoader text="Loading parts..." />
                             ) : (
-                              (() => {
-                                let color = "gray";
-                                if (total > 0 && repaired === total) color = "green";
-                                else if (repaired > 0) color = "orange";
-                                return (
-                                  <span
-                                    style={{
-                                      fontSize: 12,
-                                      color,
-                                      fontWeight:
-                                        repaired === total && total > 0
-                                          ? "bold"
-                                          : "normal",
-                                    }}
-                                  >
-                                    {repaired}/{total} parts
-                                  </span>
-                                );
-                              })()
-                            )}
-                            <div
-                              className="inline-parts-list"
-                              style={{
-                                marginTop: 7,
-                                fontSize: "0.98em",
-                                fontWeight: 500,
-                                maxWidth: 320,
-                                overflow: "hidden",
-                                whiteSpace: "nowrap",
-                                textOverflow: "ellipsis",
-                                display: "inline",
-                              }}
-                            >
-                              {parts.length > 0 ? (
-                                <>
-                                  {parts.slice(0, 2).map((part, idx2) => (
-                                    <span key={idx2} style={{ marginRight: 10 }}>
-                                      <b>{part.hardwareName}</b>{" "}
-                                      {part.assignedEngineer}{" "}
-                                      {part.notRepairable ? (
-                                        <span
-                                          style={{
-                                            color: "#e01b24",
-                                            fontWeight: 600,
-                                          }}
-                                        >
-                                          Not Repairable
-                                        </span>
-                                      ) : part.repaired ? (
-                                        <span
-                                          style={{
-                                            color: "#14b014",
-                                            fontWeight: 600,
-                                          }}
-                                        >
-                                          Repaired
-                                        </span>
-                                      ) : (
-                                        <span
-                                          style={{
-                                            color: "#d9a400",
-                                            fontWeight: 600,
-                                          }}
-                                        >
-                                          Pending
-                                        </span>
-                                      )}
-                                    </span>
-                                  ))}
-                                  {parts.length > 2 && (
+                              <>
+                                {(() => {
+                                  let color = "gray";
+                                  if (total > 0 && repaired === total)
+                                    color = "green";
+                                  else if (repaired > 0) color = "orange";
+
+                                  return (
                                     <span
                                       style={{
-                                        color: "#3498db",
-                                        marginLeft: 5,
-                                        fontWeight: 600,
+                                        fontSize: 12,
+                                        color,
+                                        fontWeight:
+                                          repaired === total && total > 0
+                                            ? "bold"
+                                            : "normal",
                                       }}
                                     >
-                                      +{parts.length - 2} more
+                                      {repaired}/{total} parts
                                     </span>
+                                  );
+                                })()}
+
+                                <div
+                                  className="inline-parts-list"
+                                  style={{
+                                    marginTop: 7,
+                                    fontSize: "0.98em",
+                                    fontWeight: 500,
+                                    maxWidth: 320,
+                                    overflow: "hidden",
+                                    whiteSpace: "nowrap",
+                                    textOverflow: "ellipsis",
+                                    display: "inline",
+                                  }}
+                                >
+                                  {parts.length > 0 ? (
+                                    <>
+                                      {parts.slice(0, 2).map((part, idx2) => (
+                                        <span
+                                          key={idx2}
+                                          style={{ marginRight: 10 }}
+                                        >
+                                          <b>{part.hardwareName}</b>{" "}
+                                          {part.assignedEngineer}{" "}
+                                          {part.notRepairable ? (
+                                            <span
+                                              style={{
+                                                color: "#e01b24",
+                                                fontWeight: 600,
+                                              }}
+                                            >
+                                              Not Repairable
+                                            </span>
+                                          ) : part.repaired ? (
+                                            <span
+                                              style={{
+                                                color: "#14b014",
+                                                fontWeight: 600,
+                                              }}
+                                            >
+                                              Repaired
+                                            </span>
+                                          ) : (
+                                            <span
+                                              style={{
+                                                color: "#d9a400",
+                                                fontWeight: 600,
+                                              }}
+                                            >
+                                              Pending
+                                            </span>
+                                          )}
+                                        </span>
+                                      ))}
+
+                                      {parts.length > 2 && (
+                                        <span
+                                          style={{
+                                            color: "#3498db",
+                                            marginLeft: 5,
+                                            fontWeight: 600,
+                                          }}
+                                        >
+                                          +{parts.length - 2} more
+                                        </span>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <span>No Parts</span>
                                   )}
-                                </>
-                              ) : (
-                                <span>No Parts</span>
-                              )}
-                            </div>
+                                </div>
+                              </>
+                            )}
                           </td>
+
                           <td>{log.complaintLog?.complaintId || "N/A"}</td>
+
                           <td>
                             <button
                               className="view-history-button"
@@ -1814,7 +2063,8 @@ const LabAssigned = ({ openRemarksModal }) => {
               </table>
             )}
           </div>
-          {filteredLogsParts.length > 0 && (
+
+          {!partsLoading && filteredLogsParts.length > 0 && (
             <div className="pagination-container">
               <button
                 className="page-button"
@@ -1823,19 +2073,19 @@ const LabAssigned = ({ openRemarksModal }) => {
               >
                 &lt;
               </button>
-              {getVisiblePages(partsTotalPages, partsCurrentPage).map(
-                (page) => (
-                  <button
-                    key={page}
-                    className={`page-button ${
-                      partsCurrentPage === page ? "active" : ""
-                    }`}
-                    onClick={() => setPartsCurrentPage(page)}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
+
+              {getVisiblePages(partsTotalPages, partsCurrentPage).map((page) => (
+                <button
+                  key={page}
+                  className={`page-button ${
+                    partsCurrentPage === page ? "active" : ""
+                  }`}
+                  onClick={() => setPartsCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+
               <button
                 className="page-button"
                 onClick={() =>
@@ -1847,7 +2097,7 @@ const LabAssigned = ({ openRemarksModal }) => {
               </button>
             </div>
           )}
-          {/* ReportModal for parts view too (same props) */}
+
           <ReportModal
             isOpen={isReportModalOpen}
             complaintId={selectedComplaintIdForReports}
@@ -1859,6 +2109,7 @@ const LabAssigned = ({ openRemarksModal }) => {
                 [complaintId]: true,
               }));
               reloadWorkedTodayByUser();
+
               try {
                 const res = await axios.post(
                   `${API_BASE_URL}/hardware-logs/reports/availability`,
