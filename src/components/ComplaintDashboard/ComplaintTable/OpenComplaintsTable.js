@@ -13,31 +13,8 @@ import useComplaintReportsLive from "../../../hooks/useComplaintReportsLive";
 import { useFilters } from "../../../context/FiltersContext"; // ✅ shared filters context
 
 // WebSocket auto-refresh hook (kept local as in your file)
-function useComplaintReportsLive(onUpdate) {
-  useEffect(() => {
-    const wsUrl = (process.env.REACT_APP_API_BASE_URL || "") + "/ws";
-    const client = new Client({
-      webSocketFactory: () => new SockJS(wsUrl),
-      reconnectDelay: 5000,
-      debug: () => {},
-      onConnect: () => {
-        client.subscribe("/topic/paginated-by-status", (message) => {
-          try {
-            const data =
-              typeof message.body === "string"
-                ? JSON.parse(message.body)
-                : message.body;
-            if (onUpdate) onUpdate(data);
-          } catch {}
-        });
-      },
-    });
-    client.activate();
-    return () => client.deactivate();
-  }, [onUpdate]);
-}
 
-const pageSize = 100;
+const pageSize = 80;
 
 const OpenComplaintsTable = ({
   handleOpenModal,
