@@ -10,7 +10,7 @@ import useComplaintReportsLive from "../../../hooks/useComplaintReportsLive";
 import Loader from "../../../utils/Loader";
 import { useFilters } from "../../../context/FiltersContext"; // ⬅️ shared/global filters
 
-const pageSize = 10;
+const pageSize = 5;
 
 const OverallComplaintsTable = ({
   handleOpenModal,
