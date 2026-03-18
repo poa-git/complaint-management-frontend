@@ -24,13 +24,8 @@ const ComplaintForm = ({ onSubmit }) => {
   const [visitors, setVisitors] = useState([]);
   const [filteredVisitors, setFilteredVisitors] = useState([]);
   const [complaintTypes, setComplaintTypes] = useState([]);
-
-  // current selected bank branches
   const [branches, setBranches] = useState([]);
-
-  // cache all fetched branches by bank name
   const [branchCache, setBranchCache] = useState({});
-
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [branchesLoading, setBranchesLoading] = useState(false);
@@ -67,40 +62,6 @@ const ComplaintForm = ({ onSubmit }) => {
         setFilteredVisitors(visitorsData);
         setComplaintTypes(typesData);
         setCities(citiesData);
-
-        // Prefetch all branches so select opens fast later
-        if (banksData.length > 0) {
-          const branchRequests = banksData.map((bank) =>
-            axios
-              .get(
-                `${API_BASE_URL}/data/branches?bank=${encodeURIComponent(bank.name)}`,
-                { withCredentials: true }
-              )
-              .then((res) => {
-                const fetchedBranches = Array.isArray(res.data) ? res.data : [];
-                return {
-                  bankName: bank.name,
-                  branches: sortBranches(fetchedBranches),
-                };
-              })
-              .catch((error) => {
-                console.error(`Error prefetching branches for ${bank.name}:`, error);
-                return {
-                  bankName: bank.name,
-                  branches: [],
-                };
-              })
-          );
-
-          const allBranches = await Promise.all(branchRequests);
-
-          const cache = {};
-          allBranches.forEach(({ bankName, branches }) => {
-            cache[bankName] = branches;
-          });
-
-          setBranchCache(cache);
-        }
       } catch (error) {
         console.error("Error fetching initial form data:", error);
       }
@@ -115,7 +76,6 @@ const ComplaintForm = ({ onSubmit }) => {
       return;
     }
 
-    // use cache first for instant result
     if (branchCache[bankName]) {
       setBranches(branchCache[bankName]);
       return;
@@ -188,12 +148,7 @@ const ComplaintForm = ({ onSubmit }) => {
       return;
     }
 
-    // instant from cache if prefetched
-    if (branchCache[selectedBank]) {
-      setBranches(branchCache[selectedBank]);
-    } else {
-      fetchBranches(selectedBank);
-    }
+    fetchBranches(selectedBank);
   };
 
   const handleBankCreate = (inputValue) => {
@@ -208,12 +163,7 @@ const ComplaintForm = ({ onSubmit }) => {
     }));
 
     validateField("bankName", inputValue);
-
-    if (branchCache[inputValue]) {
-      setBranches(branchCache[inputValue]);
-    } else {
-      fetchBranches(inputValue);
-    }
+    fetchBranches(inputValue);
   };
 
   const handleBranchSelect = (selectedOption) => {
@@ -256,11 +206,13 @@ const ComplaintForm = ({ onSubmit }) => {
       branchName: formattedValue,
     };
 
-    setBranches((prevBranches) => [...prevBranches, newBranch]);
+    const updatedBranches = [...branches, newBranch];
+
+    setBranches(updatedBranches);
 
     setBranchCache((prev) => ({
       ...prev,
-      [formData.bankName]: [...(prev[formData.bankName] || []), newBranch],
+      [formData.bankName]: updatedBranches,
     }));
 
     setFormData((prev) => ({
