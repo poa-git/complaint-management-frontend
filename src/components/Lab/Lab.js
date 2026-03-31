@@ -16,7 +16,7 @@ import ComplaintReport from "../ComplaintReport/ComplaintReport";
 import HardwarePartsModal from "./HardwarePartsModal/HardwarePartsModal";
 import Loader from "../../utils/Loader";
 
-const recordsPerPage = 20;
+const recordsPerPage = 50;
 const maxVisiblePages = 5;
 
 const currentUsername = (localStorage.getItem("username") || "User")
